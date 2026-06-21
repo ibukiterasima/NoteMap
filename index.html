@@ -7,150 +7,98 @@
 
 <style>
 
-/* 全体 */
-
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 body{
-
-    min-height:100vh;
-
-    font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-
-    background:
-    radial-gradient(circle at top left,
-    rgba(255,255,255,.15),
-    transparent 35%),
-    linear-gradient(135deg,#8a6a4d,#6f533d);
-
-    padding:20px;
+min-height:100vh;
+font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+background:linear-gradient(135deg,#8a6a4d,#6f533d);
+padding:20px;
 }
-
-/* コンテナ */
 
 .container{
-    max-width:520px;
-    margin:auto;
+max-width:520px;
+margin:auto;
 }
-
-/* カード */
 
 .card{
-
-    margin-bottom:20px;
-
-    padding:24px;
-
-    color:white;
-
-    border-radius:30px;
-
-    background:rgba(255,255,255,.18);
-
-    border:1px solid rgba(255,255,255,.25);
-
-    backdrop-filter:blur(22px);
-    -webkit-backdrop-filter:blur(22px);
+background:rgba(255,255,255,.18);
+border:1px solid rgba(255,255,255,.25);
+backdrop-filter:blur(20px);
+border-radius:24px;
+padding:24px;
+color:white;
+margin-bottom:16px;
 }
 
-/* タイトル */
-
 .logo{
-    text-align:center;
-    font-size:2rem;
-    font-weight:700;
+text-align:center;
+font-size:2rem;
+font-weight:700;
 }
 
 .subtitle{
-    text-align:center;
-    opacity:.8;
-    margin-top:6px;
+text-align:center;
+opacity:.8;
+margin-top:6px;
 }
-
-/* タイマー */
 
 .timer{
-    text-align:center;
-    font-size:3rem;
-    font-weight:200;
-    margin:24px 0;
+text-align:center;
+font-size:3rem;
+margin:24px 0;
 }
-
-/* 波 */
-
-.wave-wrap{
-    height:40px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    margin-bottom:10px;
-}
-
-.wave{
-    width:220px;
-    height:24px;
-}
-
-.wave path{
-    fill:none;
-    stroke:white;
-    stroke-width:2;
-    opacity:.5;
-    stroke-linecap:round;
-}
-
-/* 録音ボタン */
 
 .record-btn{
-
-    width:120px;
-    height:120px;
-
-    display:block;
-    margin:auto;
-
-    border:none;
-    border-radius:50%;
-
-    cursor:pointer;
-
-    background:
-    radial-gradient(circle at 30% 30%,
-    #5e9a70,#346344);
-
-    transition:.2s;
+width:120px;
+height:120px;
+border:none;
+border-radius:50%;
+display:block;
+margin:auto;
+cursor:pointer;
+background:radial-gradient(circle at 30% 30%,#5e9a70,#346344);
 }
 
 .record-btn.recording{
-    background:
-    radial-gradient(circle at 30% 30%,
-    #ff7777,#d62828);
+background:radial-gradient(circle at 30% 30%,#ff7777,#d62828);
 }
 
 .record-dot{
-    width:28px;
-    height:28px;
-    background:white;
-    border-radius:50%;
-    margin:auto;
+width:28px;
+height:28px;
+background:white;
+border-radius:50%;
+margin:auto;
 }
-
-/* ステータス */
 
 .status{
-    text-align:center;
-    margin-top:20px;
+text-align:center;
+margin-top:20px;
 }
 
-/* 音声 */
-
 audio{
-    width:100%;
-    margin-top:20px;
+width:100%;
+margin-top:20px;
+}
+
+.record-item{
+padding:12px;
+border-radius:14px;
+background:rgba(255,255,255,.12);
+margin-top:10px;
+}
+
+button.small{
+margin-top:8px;
+padding:6px 10px;
+border:none;
+border-radius:10px;
+cursor:pointer;
 }
 
 </style>
@@ -160,677 +108,179 @@ audio{
 
 <div class="container">
 
-    <div class="card">
+<div class="card">
 
-        <div class="logo">NoteMap</div>
-        <div class="subtitle">録音</div>
+<div class="logo">NoteMap</div>
+<div class="subtitle">録音</div>
 
-        <div class="timer" id="timer">00:00</div>
+<div class="timer" id="timer">00:00</div>
 
-        <!-- 波 -->
-        <div class="wave-wrap">
-            <svg class="wave" viewBox="0 0 200 20">
-                <path id="wavePath"
-                d="M0 10 Q 25 10 50 10 T 100 10 T 150 10 T 200 10"/>
-            </svg>
-        </div>
+<button id="btn" class="record-btn">
+<div class="record-dot"></div>
+</button>
 
-        <button id="recordBtn" class="record-btn">
-            <div class="record-dot"></div>
-        </button>
+<div class="status" id="status">タップで録音</div>
 
-        <div class="status" id="status">
-            タップして録音開始
-        </div>
-
-        <audio id="player" controls></audio>
-
-    </div>
+<audio id="player" controls></audio>
 
 </div>
+
+<div class="card">
+<div id="list"></div>
+</div>
+
+</div>
+
 <script>
 
 let mediaRecorder;
-let currentStream;
+let stream;
 let chunks = [];
-
 let recording = false;
 
 let seconds = 0;
-let timerInterval;
+let timerId;
 
-let audioCtx;
-let analyser;
-let dataArray;
-let source;
+let db;
 
-const btn =
-document.getElementById("recordBtn");
-
-const timer =
-document.getElementById("timer");
-
-const statusText =
-document.getElementById("status");
-
-const player =
-document.getElementById("player");
-
-const wavePath =
-document.getElementById("wavePath");
+const btn = document.getElementById("btn");
+const timer = document.getElementById("timer");
+const status = document.getElementById("status");
+const player = document.getElementById("player");
+const list = document.getElementById("list");
 
 /* タイマー */
 
-function updateTimer(){
-
-    const m =
-    String(Math.floor(seconds / 60)).padStart(2,"0");
-
-    const s =
-    String(seconds % 60).padStart(2,"0");
-
-    timer.textContent = `${m}:${s}`;
+function update(){
+const m = String(Math.floor(seconds/60)).padStart(2,"0");
+const s = String(seconds%60).padStart(2,"0");
+timer.textContent = `${m}:${s}`;
 }
 
-/* 波リセット */
+/* DB */
 
-function setFlatWave(){
+const req = indexedDB.open("NoteMap",1);
 
-    wavePath.setAttribute(
-    "d",
-    "M0 10 Q 25 10 50 10 T 100 10 T 150 10 T 200 10"
-    );
+req.onupgradeneeded = e=>{
+db = e.target.result;
+db.createObjectStore("rec",{keyPath:"id",autoIncrement:true});
+};
+
+req.onsuccess = e=>{
+db = e.target.result;
+load();
+};
+
+/* 録音 */
+
+btn.onclick = async ()=>{
+
+if(!recording){
+
+stream = await navigator.mediaDevices.getUserMedia({audio:true});
+
+chunks = [];
+
+mediaRecorder = new MediaRecorder(stream);
+
+mediaRecorder.ondataavailable = e=>{
+chunks.push(e.data);
+};
+
+mediaRecorder.onstop = ()=>{
+
+const blob = new Blob(chunks,{type:"audio/webm"});
+const url = URL.createObjectURL(blob);
+
+player.src = url;
+
+db.transaction("rec","readwrite")
+.objectStore("rec")
+.add({
+name:"録音 "+new Date().toLocaleString(),
+blob:blob
+});
+
+load();
+
+if(stream){
+stream.getTracks().forEach(t=>t.stop());
 }
 
-setFlatWave();
+};
+
+mediaRecorder.start();
+
+recording = true;
+
+btn.classList.add("recording");
+
+status.textContent = "録音中";
+
+seconds = 0;
+update();
+
+timerId = setInterval(()=>{
+seconds++;
+update();
+},1000);
+
+}else{
+
+mediaRecorder.stop();
+
+clearInterval(timerId);
+
+recording = false;
+
+btn.classList.remove("recording");
+
+status.textContent = "録音完了";
+
+}
+
+};
+
+/* 一覧 */
+
+function load(){
+
+if(!db) return;
+
+list.innerHTML = "";
+
+db.transaction("rec")
+.objectStore("rec")
+.getAll().onsuccess = e=>{
+
+e.target.result.reverse().forEach(r=>{
+
+const div = document.createElement("div");
+div.className="record-item";
+
+const url = URL.createObjectURL(r.blob);
+
+div.innerHTML = `
+<div>${r.name}</div>
+<button class="small">再生</button>
+`;
+
+div.querySelector("button").onclick=()=>{
+player.src=url;
+player.play();
+};
+
+list.appendChild(div);
+
+});
+
+};
+
+}
+
+update();
 
 </script>
 
 </body>
 </html>
-async function startMic(){
-
-    currentStream =
-    await navigator.mediaDevices.getUserMedia({
-        audio:true
-    });
-
-    audioCtx =
-    new (window.AudioContext || window.webkitAudioContext)();
-
-    source =
-    audioCtx.createMediaStreamSource(currentStream);
-
-    analyser =
-    audioCtx.createAnalyser();
-
-    analyser.fftSize = 512;
-
-    source.connect(analyser);
-
-    dataArray =
-    new Uint8Array(analyser.frequencyBinCount);
-}
-
-/* 波の初期状態 */
-
-function resetWave(){
-
-    wavePath.setAttribute(
-    "d",
-    "M0 10 Q 25 10 50 10 T 100 10 T 150 10 T 200 10"
-    );
-}
-
-resetWave();
-
-/* 録音ボタン */
-
-btn.addEventListener("click", async ()=>{
-
-    if(!recording){
-
-        try{
-
-            await startMic();
-
-            chunks = [];
-
-            let options = {};
-
-            if(MediaRecorder.isTypeSupported("audio/mp4")){
-                options.mimeType = "audio/mp4";
-            }
-
-            mediaRecorder =
-            new MediaRecorder(currentStream, options);
-
-            mediaRecorder.ondataavailable = (e)=>{
-
-                if(e.data && e.data.size > 0){
-                    chunks.push(e.data);
-                }
-
-            };
-
-            mediaRecorder.onstop = ()=>{
-
-                const blob =
-                new Blob(chunks,{
-                    type: options.mimeType || "audio/mp4"
-                });
-
-                const url =
-                URL.createObjectURL(blob);
-
-                player.src = url;
-                player.load();
-
-                if(currentStream){
-                    currentStream.getTracks().forEach(t=>t.stop());
-                }
-
-                if(audioCtx){
-                    audioCtx.close();
-                }
-
-            };
-
-            mediaRecorder.start();
-
-            recording = true;
-
-            btn.classList.add("recording");
-
-            statusText.textContent = "録音中";
-
-            seconds = 0;
-            updateTimer();
-
-            timerInterval =
-            setInterval(()=>{
-                seconds++;
-                updateTimer();
-            },1000);
-
-        }catch(err){
-            console.error(err);
-        }
-
-    }else{
-
-        mediaRecorder.stop();
-
-        clearInterval(timerInterval);
-
-        recording = false;
-
-        btn.classList.remove("recording");
-
-        statusText.textContent = "録音完了";
-    }
-
-});
-
-updateTimer();
-function startWave(){
-
-    const draw = () => {
-
-        if(!analyser) return;
-
-        analyser.getByteTimeDomainData(dataArray);
-
-        let sum = 0;
-
-        for(let i = 0; i < dataArray.length; i++){
-
-            let v = dataArray[i] - 128;
-            sum += v * v;
-
-        }
-
-        let volume =
-        Math.sqrt(sum / dataArray.length);
-
-        let amp =
-        Math.min(volume / 18, 14);
-
-        const y1 = 10 - amp;
-        const y2 = 10 + amp * 0.6;
-        const y3 = 10 - amp * 0.4;
-
-        wavePath.setAttribute(
-        "d",
-        `M0 10
-        Q 25 ${y1}
-        50 10
-        T 100 ${y2}
-        T 150 ${y3}
-        T 200 10`
-        );
-
-        requestAnimationFrame(draw);
-
-    };
-
-    draw();
-}
-let db;
-
-/* ===== DB作成 ===== */
-
-const request =
-indexedDB.open("NoteMapDB",1);
-
-request.onupgradeneeded = (e)=>{
-
-    db = e.target.result;
-
-    db.createObjectStore("records",{
-        keyPath:"id",
-        autoIncrement:true
-    });
-
-};
-
-request.onsuccess = (e)=>{
-
-    db = e.target.result;
-
-    renderUI();
-
-};
-
-request.onerror = ()=>{
-
-    console.log("DB error");
-
-};
-
-/* ===== 保存 ===== */
-
-function saveRecord(blob){
-
-    const tx =
-    db.transaction(["records"],"readwrite");
-
-    tx.objectStore("records").add({
-
-        name:
-        "録音 " +
-        new Date().toLocaleString("ja-JP"),
-
-        date:
-        new Date().toISOString(),
-
-        blob:blob
-
-    });
-
-    tx.oncomplete = ()=>{
-
-        renderUI();
-
-    };
-
-}
-
-/* ===== UI表示 ===== */
-
-const recordList =
-document.createElement("div");
-
-document.body.appendChild(recordList);
-
-function renderUI(){
-
-    recordList.innerHTML = "";
-
-    const tx =
-    db.transaction(["records"],"readonly");
-
-    const store =
-    tx.objectStore("records");
-
-    store.getAll().onsuccess = (e)=>{
-
-        let records =
-        e.target.result.reverse();
-
-        records.forEach(record=>{
-
-            const item =
-            document.createElement("div");
-
-            item.style.cssText =
-            `
-            background:rgba(255,255,255,.12);
-            padding:12px;
-            margin:10px;
-            border-radius:16px;
-            color:white;
-            `;
-
-            const title =
-            document.createElement("div");
-
-            title.textContent =
-            record.name;
-
-            const btnWrap =
-            document.createElement("div");
-
-            btnWrap.style.marginTop = "8px";
-
-            /* 再生 */
-
-            const play =
-            document.createElement("button");
-
-            play.textContent = "再生";
-
-            play.onclick = ()=>{
-
-                const url =
-                URL.createObjectURL(record.blob);
-
-                player.src = url;
-                player.play();
-
-            };
-
-            /* 削除 */
-
-            const del =
-            document.createElement("button");
-
-            del.textContent = "削除";
-
-            del.onclick = ()=>{
-
-                const tx =
-                db.transaction(["records"],"readwrite");
-
-                tx.objectStore("records")
-                .delete(record.id);
-
-                tx.oncomplete = ()=>{
-
-                    renderUI();
-
-                };
-
-            };
-
-            btnWrap.appendChild(play);
-            btnWrap.appendChild(del);
-
-            item.appendChild(title);
-            item.appendChild(btnWrap);
-
-            recordList.appendChild(item);
-
-        });
-
-    };
-
-}
-/* ===== ガラスモーダル ===== */
-
-const modal =
-document.createElement("div");
-
-modal.style.cssText = `
-position:fixed;
-inset:0;
-display:none;
-justify-content:center;
-align-items:center;
-background:rgba(0,0,0,.35);
-backdrop-filter:blur(10px);
-`;
-
-modal.innerHTML = `
-<div style="
-width:280px;
-padding:20px;
-border-radius:20px;
-background:rgba(255,255,255,.18);
-border:1px solid rgba(255,255,255,.25);
-backdrop-filter:blur(22px);
-color:white;
-">
-
-<div id="mTitle" style="font-weight:700;margin-bottom:10px;">タイトル</div>
-
-<input id="mInput"
-style="
-width:100%;
-padding:10px;
-border:none;
-border-radius:10px;
-margin-bottom:12px;
-">
-
-<div style="display:flex;gap:8px;">
-<button id="mCancel" style="flex:1;padding:8px;border:none;border-radius:10px;">キャンセル</button>
-<button id="mOk" style="flex:1;padding:8px;border:none;border-radius:10px;">OK</button>
-</div>
-
-</div>
-`;
-
-document.body.appendChild(modal);
-
-const mTitle =
-modal.querySelector("#mTitle");
-
-const mInput =
-modal.querySelector("#mInput");
-
-const mCancel =
-modal.querySelector("#mCancel");
-
-const mOk =
-modal.querySelector("#mOk");
-
-let modalResolve;
-
-function showModal(title, value=""){
-
-    modal.style.display = "flex";
-
-    mTitle.textContent = title;
-
-    mInput.value = value;
-
-    mInput.focus();
-
-    return new Promise(resolve=>{
-        modalResolve = resolve;
-    });
-
-}
-
-function closeModal(){
-    modal.style.display = "none";
-}
-
-/* キャンセル */
-
-mCancel.onclick = ()=>{
-
-    closeModal();
-
-    modalResolve(null);
-
-};
-
-/* OK */
-
-mOk.onclick = ()=>{
-
-    closeModal();
-
-    modalResolve(mInput.value);
-
-};
-
-/* ===== 名前変更（UIに追加） ===== */
-
-function renderUI(){
-
-    recordList.innerHTML = "";
-
-    db.transaction(["records"],"readonly")
-    .objectStore("records")
-    .getAll().onsuccess = (e)=>{
-
-        let records =
-        e.target.result.reverse();
-
-        records.forEach(record=>{
-
-            const item =
-            document.createElement("div");
-
-            item.style.cssText = `
-            background:rgba(255,255,255,.12);
-            padding:12px;
-            margin:10px;
-            border-radius:16px;
-            color:white;
-            `;
-
-            const title =
-            document.createElement("div");
-
-            title.textContent = record.name;
-
-            const btnWrap =
-            document.createElement("div");
-
-            btnWrap.style.marginTop = "8px";
-
-            /* 再生 */
-
-            const play =
-            document.createElement("button");
-
-            play.textContent = "再生";
-
-            play.onclick = ()=>{
-
-                player.src =
-                URL.createObjectURL(record.blob);
-
-                player.play();
-
-            };
-
-            /* 名前変更 */
-
-            const rename =
-            document.createElement("button");
-
-            rename.textContent = "名前変更";
-
-            rename.onclick = async ()=>{
-
-                const newName =
-                await showModal("名前変更", record.name);
-
-                if(!newName) return;
-
-                record.name = newName;
-
-                const tx =
-                db.transaction(["records"],"readwrite");
-
-                tx.objectStore("records").put(record);
-
-                tx.oncomplete = ()=>renderUI();
-
-            };
-
-            /* 削除 */
-
-            const del =
-            document.createElement("button");
-
-            del.textContent = "削除";
-
-            del.onclick = ()=>{
-
-                const tx =
-                db.transaction(["records"],"readwrite");
-
-                tx.objectStore("records")
-                .delete(record.id);
-
-                tx.oncomplete = ()=>renderUI();
-
-            };
-
-            btnWrap.appendChild(play);
-            btnWrap.appendChild(rename);
-            btnWrap.appendChild(del);
-
-            item.appendChild(title);
-            item.appendChild(btnWrap);
-
-            recordList.appendChild(item);
-
-        });
-
-    };
-
-}
-
-/* ===== 検索（追加） ===== */
-
-const search =
-document.createElement("input");
-
-search.placeholder = "検索...";
-
-search.style.cssText = `
-width:100%;
-padding:10px;
-margin:10px;
-border:none;
-border-radius:10px;
-`;
-
-document.body.insertBefore(search, recordList);
-
-search.oninput = ()=>{
-
-    const q = search.value.toLowerCase();
-
-    db.transaction(["records"],"readonly")
-    .objectStore("records")
-    .getAll().onsuccess = (e)=>{
-
-        let records =
-        e.target.result.filter(r=>
-            r.name.toLowerCase().includes(q)
-        );
-
-        recordList.innerHTML = "";
-
-        records.forEach(r=>{
-
-            const item =
-            document.createElement("div");
-
-            item.textContent = r.name;
-
-            recordList.appendChild(item);
-
-        });
-
-    };
-
-};
