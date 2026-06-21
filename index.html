@@ -14,60 +14,81 @@
 
 body{
     min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
     font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+
     background:
-    radial-gradient(circle at top left, rgba(255,255,255,0.15), transparent 35%),
+    radial-gradient(circle at top left,
+    rgba(255,255,255,0.15),
+    transparent 35%),
     linear-gradient(135deg,#8a6a4d,#6f533d);
+
     padding:20px;
 }
 
+.container{
+    max-width:500px;
+    margin:auto;
+}
+
 .card{
-    width:min(92vw,420px);
     backdrop-filter:blur(22px);
     -webkit-backdrop-filter:blur(22px);
+
     background:rgba(255,255,255,.18);
+
     border:1px solid rgba(255,255,255,.25);
+
     border-radius:32px;
-    padding:32px 24px;
-    text-align:center;
+
+    padding:24px;
+
     color:white;
+
+    margin-bottom:20px;
 }
 
 .logo{
     font-size:2rem;
     font-weight:700;
+    text-align:center;
 }
 
 .subtitle{
-    margin-top:6px;
+    text-align:center;
     opacity:.8;
+    margin-top:6px;
 }
 
 .timer{
-    margin:30px 0;
-    font-size:3.5rem;
+    text-align:center;
+    font-size:3rem;
     font-weight:200;
-    letter-spacing:.08em;
+    margin:25px 0;
 }
 
 .record-btn{
     width:110px;
     height:110px;
+
     border:none;
     border-radius:50%;
-    cursor:pointer;
-    background:
-    radial-gradient(circle at 30% 30%,#5e9a70,#346344);
+
+    display:block;
     margin:auto;
+
+    cursor:pointer;
+
+    background:
+    radial-gradient(circle at 30% 30%,
+    #5e9a70,#346344);
+
     transition:.25s;
 }
 
 .record-btn.recording{
     background:
-    radial-gradient(circle at 30% 30%,#ff7777,#d62828);
+    radial-gradient(circle at 30% 30%,
+    #ff7777,#d62828);
 }
 
 .record-dot{
@@ -79,60 +100,98 @@ body{
 }
 
 .status{
+    text-align:center;
     margin-top:20px;
 }
 
 audio{
     width:100%;
-    margin-top:25px;
+    margin-top:20px;
 }
 
-.debug{
-    margin-top:15px;
-    font-size:12px;
-    word-break:break-all;
-    opacity:.9;
-    text-align:left;
+.section-title{
+    font-size:1.2rem;
+    margin-bottom:15px;
 }
 
-button.download{
-    margin-top:15px;
-    padding:10px 16px;
+.record-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.record-item{
+    background:rgba(255,255,255,.12);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    border-radius:18px;
+
+    padding:12px;
+}
+
+.record-name{
+    font-weight:600;
+}
+
+.record-date{
+    opacity:.7;
+    font-size:.85rem;
+    margin-top:4px;
+}
+
+.record-actions{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+}
+
+.small-btn{
     border:none;
     border-radius:10px;
-    background:white;
+    padding:8px 12px;
     cursor:pointer;
 }
 </style>
 </head>
+
 <body>
+
+<div class="container">
 
 <div class="card">
 
-    <div class="logo">NoteMap</div>
-    <div class="subtitle">録音</div>
+<div class="logo">NoteMap</div>
+<div class="subtitle">録音</div>
 
-    <div class="timer" id="timer">00:00</div>
+<div class="timer" id="timer">00:00</div>
 
-    <button class="record-btn" id="recordBtn">
-        <div class="record-dot"></div>
-    </button>
+<button class="record-btn" id="recordBtn">
+<div class="record-dot"></div>
+</button>
 
-    <div class="status" id="status">
-        タップして録音開始
-    </div>
+<div class="status" id="status">
+タップして録音開始
+</div>
 
-    <audio id="player" controls></audio>
-
-    <button id="downloadBtn" class="download" style="display:none;">
-        録音を保存
-    </button>
-
-    <div class="debug" id="debug"></div>
+<audio id="player" controls></audio>
 
 </div>
 
+<div class="card">
+
+<div class="section-title">
+録音一覧
+</div>
+
+<div id="recordList" class="record-list">
+</div>
+
+</div>
+
+</div>
 <script>
+
 let mediaRecorder;
 let chunks = [];
 let recording = false;
@@ -140,14 +199,13 @@ let recording = false;
 let seconds = 0;
 let timerInterval;
 
-let currentBlob = null;
+let db;
 
 const btn = document.getElementById("recordBtn");
 const timer = document.getElementById("timer");
 const statusText = document.getElementById("status");
 const player = document.getElementById("player");
-const debug = document.getElementById("debug");
-const downloadBtn = document.getElementById("downloadBtn");
+const recordList = document.getElementById("recordList");
 
 function updateTimer(){
     const m = String(Math.floor(seconds/60)).padStart(2,"0");
@@ -155,114 +213,360 @@ function updateTimer(){
     timer.textContent = `${m}:${s}`;
 }
 
-btn.addEventListener("click", async () => {
+const request = indexedDB.open("NoteMapDB",1);
+
+request.onupgradeneeded = (event)=>{
+
+    db = event.target.result;
+
+    db.createObjectStore("records",{
+        keyPath:"id",
+        autoIncrement:true
+    });
+};
+
+request.onsuccess = (event)=>{
+
+    db = event.target.result;
+
+    loadRecords();
+};
+
+function saveRecord(blob){
+
+    const transaction =
+    db.transaction(["records"],"readwrite");
+
+    const store =
+    transaction.objectStore("records");
+
+    const now = new Date();
+
+    store.add({
+        name:"録音 " +
+        now.toLocaleString("ja-JP"),
+
+        date:now.toISOString(),
+
+        blob:blob
+    });
+
+    transaction.oncomplete = ()=>{
+        loadRecords();
+    };
+}
+
+function loadRecords(){
+
+    recordList.innerHTML = "";
+
+    const transaction =
+    db.transaction(["records"],"readonly");
+
+    const store =
+    transaction.objectStore("records");
+
+    const request = store.getAll();
+
+    request.onsuccess = ()=>{
+
+        const records =
+        request.result.reverse();
+
+        records.forEach(record=>{
+
+            createRecordCard(record);
+
+        });
+    };
+}
+
+btn.addEventListener("click", async ()=>{
 
     if(!recording){
 
         try{
 
-            const stream = await navigator.mediaDevices.getUserMedia({
-                audio:true
+            const stream =
+            await navigator.mediaDevices
+            .getUserMedia({
+
+                audio:{
+                    echoCancellation:true,
+                    noiseSuppression:true,
+                    autoGainControl:false
+                }
+
             });
 
             chunks = [];
 
             let options = {};
 
-            if(MediaRecorder.isTypeSupported("audio/mp4")){
-                options.mimeType = "audio/mp4";
+            if(
+            MediaRecorder.isTypeSupported(
+            "audio/mp4"
+            )){
+                options.mimeType =
+                "audio/mp4";
             }
 
-            mediaRecorder = new MediaRecorder(stream, options);
+            mediaRecorder =
+            new MediaRecorder(
+            stream,
+            options
+            );
 
-            mediaRecorder.ondataavailable = (e)=>{
-                if(e.data && e.data.size > 0){
+            mediaRecorder.ondataavailable =
+            (e)=>{
+
+                if(e.data.size > 0){
+
                     chunks.push(e.data);
+
                 }
             };
 
             mediaRecorder.onstop = ()=>{
 
-                const blob = new Blob(
-                    chunks,
-                    options.mimeType ? {type: options.mimeType} : {}
-                );
+                const blob =
+                new Blob(
+                chunks,
+                {
+                    type:
+                    options.mimeType ||
+                    "audio/mp4"
+                });
 
-                currentBlob = blob;
-
-                const url = URL.createObjectURL(blob);
+                const url =
+                URL.createObjectURL(blob);
 
                 player.src = url;
+
                 player.load();
 
-                downloadBtn.style.display = "inline-block";
+                saveRecord(blob);
 
-                debug.innerHTML =
-                    "type: " + (blob.type || "(空)") + "<br>" +
-                    "size: " + blob.size + " bytes";
-
-                player.onloadedmetadata = () => {
-                    debug.innerHTML +=
-                        "<br>duration: " + player.duration;
-                };
-
-                player.onerror = () => {
-                    debug.innerHTML +=
-                        "<br><b>再生エラー</b>";
-                };
             };
 
             mediaRecorder.start(1000);
 
             recording = true;
 
-            btn.classList.add("recording");
+            btn.classList.add(
+            "recording"
+            );
 
-            statusText.textContent = "録音中";
+            statusText.textContent =
+            "録音中";
 
             seconds = 0;
+
             updateTimer();
 
-            timerInterval = setInterval(()=>{
+            timerInterval =
+            setInterval(()=>{
+
                 seconds++;
+
                 updateTimer();
+
             },1000);
 
         }catch(err){
 
-            alert("マイクへのアクセスを許可してください");
+            alert(
+            "マイクを許可してください"
+            );
+
             console.error(err);
 
         }
 
     }else{
 
-        mediaRecorder.stop();
+        mediaRecorder.requestData();
+
+        setTimeout(()=>{
+
+            mediaRecorder.stop();
+
+        },300);
 
         clearInterval(timerInterval);
 
         recording = false;
 
-        btn.classList.remove("recording");
+        btn.classList.remove(
+        "recording"
+        );
 
-        statusText.textContent = "録音完了";
+        statusText.textContent =
+        "録音完了";
     }
 });
 
-downloadBtn.addEventListener("click", () => {
-
-    if(!currentBlob) return;
-
-    const a = document.createElement("a");
-    const url = URL.createObjectURL(currentBlob);
-
-    a.href = url;
-    a.download = "recording.m4a";
-    a.click();
-});
-
 updateTimer();
-</script>
+function createRecordCard(record){
 
-</body>
-</html>
+    const item =
+    document.createElement("div");
+
+    item.className =
+    "record-item";
+
+    const name =
+    document.createElement("div");
+
+    name.className =
+    "record-name";
+
+    name.textContent =
+    record.name;
+
+    const date =
+    document.createElement("div");
+
+    date.className =
+    "record-date";
+
+    date.textContent =
+    new Date(record.date)
+    .toLocaleString("ja-JP");
+
+    const actions =
+    document.createElement("div");
+
+    actions.className =
+    "record-actions";
+
+    const playBtn =
+    document.createElement("button");
+
+    playBtn.className =
+    "small-btn";
+
+    playBtn.textContent =
+    "再生";
+
+    playBtn.onclick = ()=>{
+
+        const url =
+        URL.createObjectURL(
+        record.blob
+        );
+
+        player.src = url;
+
+        player.load();
+
+        player.play();
+    };
+
+    const renameBtn =
+    document.createElement("button");
+
+    renameBtn.className =
+    "small-btn";
+
+    renameBtn.textContent =
+    "名前変更";
+
+    renameBtn.onclick = ()=>{
+
+        const newName =
+        prompt(
+        "新しい名前",
+        record.name
+        );
+
+        if(!newName) return;
+
+        const transaction =
+        db.transaction(
+        ["records"],
+        "readwrite"
+        );
+
+        const store =
+        transaction.objectStore(
+        "records"
+        );
+
+        record.name =
+        newName;
+
+        store.put(record);
+
+        transaction.oncomplete =
+        ()=>{
+
+            loadRecords();
+
+        };
+    };
+
+    const deleteBtn =
+    document.createElement("button");
+
+    deleteBtn.className =
+    "small-btn";
+
+    deleteBtn.textContent =
+    "削除";
+
+    deleteBtn.onclick = ()=>{
+
+        if(
+        !confirm(
+        "削除しますか？"
+        )
+        ){
+            return;
+        }
+
+        const transaction =
+        db.transaction(
+        ["records"],
+        "readwrite"
+        );
+
+        const store =
+        transaction.objectStore(
+        "records"
+        );
+
+        store.delete(
+        record.id
+        );
+
+        transaction.oncomplete =
+        ()=>{
+
+            loadRecords();
+
+        };
+    };
+
+    actions.appendChild(
+    playBtn
+    );
+
+    actions.appendChild(
+    renameBtn
+    );
+
+    actions.appendChild(
+    deleteBtn
+    );
+
+    item.appendChild(name);
+
+    item.appendChild(date);
+
+    item.appendChild(actions);
+
+    recordList.appendChild(
+    item
+    );
+}
