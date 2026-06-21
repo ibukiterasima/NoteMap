@@ -15,33 +15,27 @@ box-sizing:border-box;
 body{
 min-height:100vh;
 font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-background:
-radial-gradient(circle at top left, rgba(255,255,255,.18), transparent 40%),
-linear-gradient(135deg,#7a5a42,#4a3a2c);
+background:linear-gradient(135deg,#7a5a42,#4a3a2c);
 padding:20px;
 display:flex;
 justify-content:center;
 }
 
 .container{
-max-width:520px;
 width:100%;
+max-width:520px;
 }
-
-/* ===== カード ===== */
 
 .card{
 background:rgba(255,255,255,.14);
 border:1px solid rgba(255,255,255,.25);
 backdrop-filter:blur(28px);
-border-radius:28px;
-padding:26px;
+border-radius:26px;
+padding:24px;
 color:white;
-margin-bottom:18px;
+margin-bottom:16px;
 box-shadow:0 20px 40px rgba(0,0,0,.25);
 }
-
-/* ===== タイトル ===== */
 
 .logo{
 text-align:center;
@@ -51,21 +45,16 @@ font-weight:800;
 
 .subtitle{
 text-align:center;
-opacity:.75;
+opacity:.7;
 margin-top:6px;
 }
 
-/* ===== タイマー ===== */
-
 .timer{
 text-align:center;
-font-size:3.4rem;
-margin:26px 0;
+font-size:3.2rem;
+margin:24px 0;
 font-weight:200;
-letter-spacing:2px;
 }
-
-/* ===== 録音ボタン ===== */
 
 .record-btn{
 width:130px;
@@ -77,18 +66,11 @@ margin:auto;
 cursor:pointer;
 background:radial-gradient(circle at 30% 30%,#63b27a,#2e5a3a);
 box-shadow:0 12px 30px rgba(0,0,0,.35);
-transition:.2s;
-}
-
-.record-btn:active{
-transform:scale(.96);
 }
 
 .record-btn.recording{
 background:radial-gradient(circle at 30% 30%,#ff6b6b,#b32626);
 }
-
-/* ===== ドット ===== */
 
 .record-dot{
 width:30px;
@@ -98,27 +80,34 @@ border-radius:50%;
 margin:auto;
 }
 
-/* ===== ステータス ===== */
-
 .status{
 text-align:center;
-margin-top:18px;
+margin-top:16px;
 opacity:.85;
 }
 
-/* ===== audio ===== */
-
 audio{
 width:100%;
-margin-top:20px;
+margin-top:18px;
 border-radius:12px;
 }
 
-/* ===== リスト ===== */
+/* 検索 */
+#search{
+width:100%;
+padding:10px;
+border:none;
+border-radius:12px;
+margin-bottom:12px;
+background:rgba(255,255,255,.15);
+color:white;
+outline:none;
+}
 
+/* リスト */
 .record-item{
 padding:14px;
-border-radius:18px;
+border-radius:16px;
 background:rgba(255,255,255,.10);
 margin-top:10px;
 border:1px solid rgba(255,255,255,.12);
@@ -139,8 +128,7 @@ background:rgba(255,255,255,.18);
 color:white;
 }
 
-/* ===== モーダル ===== */
-
+/* モーダル */
 .modal{
 position:fixed;
 inset:0;
@@ -215,7 +203,11 @@ color:white;
 </div>
 
 <div class="card">
+
+<input id="search" placeholder="検索...">
+
 <div id="list"></div>
+
 </div>
 
 </div>
@@ -248,16 +240,15 @@ let timerId;
 
 let db;
 
-/* ===== UI ===== */
-
+/* UI */
 const btn = document.getElementById("btn");
 const timer = document.getElementById("timer");
 const status = document.getElementById("status");
 const player = document.getElementById("player");
 const list = document.getElementById("list");
+const search = document.getElementById("search");
 
-/* ===== モーダル ===== */
-
+/* モーダル */
 const modal = document.getElementById("modal");
 const mTitle = document.getElementById("mTitle");
 const mInput = document.getElementById("mInput");
@@ -266,8 +257,7 @@ const ok = document.getElementById("ok");
 
 let resolveModal;
 
-function showModal(title, value=""){
-
+function showModal(title,value=""){
 modal.style.display="flex";
 mTitle.textContent=title;
 mInput.value=value;
@@ -275,7 +265,6 @@ mInput.value=value;
 return new Promise(res=>{
 resolveModal=res;
 });
-
 }
 
 cancel.onclick=()=>{
@@ -288,16 +277,14 @@ modal.style.display="none";
 resolveModal(mInput.value);
 };
 
-/* ===== タイマー ===== */
-
+/* タイマー */
 function update(){
 timer.textContent=
 String(Math.floor(seconds/60)).padStart(2,"0")
 +":"+String(seconds%60).padStart(2,"0");
 }
 
-/* ===== DB ===== */
-
+/* DB */
 const req = indexedDB.open("NoteMap",1);
 
 req.onupgradeneeded = e=>{
@@ -310,8 +297,7 @@ db = e.target.result;
 load();
 };
 
-/* ===== 録音 ===== */
-
+/* 録音 */
 btn.onclick = async ()=>{
 
 if(!recording){
@@ -328,33 +314,30 @@ chunks.push(e.data);
 mediaRecorder.onstop = ()=>{
 
 const blob = new Blob(chunks,{type:"audio/webm"});
-const url = URL.createObjectURL(blob);
 
 db.transaction("rec","readwrite")
 .objectStore("rec")
 .add({
 name:"録音 "+new Date().toLocaleString(),
-url:url
+blob:blob
 });
 
 load();
 
 stream.getTracks().forEach(t=>t.stop());
 
-player.src = url;
-
 };
 
 mediaRecorder.start();
 
-recording = true;
+recording=true;
 btn.classList.add("recording");
-status.textContent = "録音中";
+status.textContent="録音中";
 
-seconds = 0;
+seconds=0;
 update();
 
-timerId = setInterval(()=>{
+timerId=setInterval(()=>{
 seconds++;
 update();
 },1000);
@@ -365,30 +348,34 @@ mediaRecorder.stop();
 
 clearInterval(timerId);
 
-recording = false;
-
+recording=false;
 btn.classList.remove("recording");
-status.textContent = "録音完了";
-
+status.textContent="録音完了";
 }
 
 };
 
-/* ===== 一覧 ===== */
+/* 検索 */
+search.oninput = ()=> load();
 
+/* 一覧 */
 function load(){
 
 if(!db) return;
 
-list.innerHTML = "";
+const keyword = search.value || "";
+
+list.innerHTML="";
 
 db.transaction("rec")
 .objectStore("rec")
-.getAll().onsuccess = e=>{
+.getAll().onsuccess=e=>{
 
-e.target.result.reverse().forEach(r=>{
+e.target.result.reverse()
+.filter(r=>r.name.includes(keyword))
+.forEach(r=>{
 
-const div = document.createElement("div");
+const div=document.createElement("div");
 div.className="record-item";
 
 div.innerHTML=`
@@ -398,39 +385,36 @@ div.innerHTML=`
 <button class="small-btn">削除</button>
 `;
 
-const [play,rename,del] = div.querySelectorAll("button");
+const [play,rename,del]=div.querySelectorAll("button");
 
-/* 再生 */
-play.onclick = ()=>{
-player.src = r.url;
+/* 再生（ここが重要） */
+play.onclick=()=>{
+const url = URL.createObjectURL(r.blob);
+player.src=url;
 player.play().catch(()=>{});
 };
 
 /* 名前変更 */
-rename.onclick = async ()=>{
-
-const name = await showModal("名前変更", r.name);
+rename.onclick=async()=>{
+const name = await showModal("名前変更",r.name);
 if(!name) return;
 
-r.name = name;
+r.name=name;
 
 db.transaction("rec","readwrite")
 .objectStore("rec")
 .put(r);
 
 load();
-
 };
 
 /* 削除 */
-del.onclick = ()=>{
-
+del.onclick=()=>{
 db.transaction("rec","readwrite")
 .objectStore("rec")
 .delete(r.id);
 
 load();
-
 };
 
 list.appendChild(div);
