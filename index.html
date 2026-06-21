@@ -21,21 +21,27 @@ padding:20px;
 margin-bottom:15px;
 }
 
-button{
+.record-btn{
+width:110px;
+height:110px;
+border-radius:50%;
 border:none;
-padding:8px 12px;
-border-radius:10px;
-margin-right:6px;
-cursor:pointer;
+display:block;
+margin:auto;
+background:#346344;
 }
 
-.record-btn{
-width:110px;height:110px;
-border-radius:50%;
-background:#346344;
-display:block;margin:auto;
+.recording{
+background:#d62828;
 }
-.recording{background:#d62828;}
+
+button{
+border:none;
+padding:8px 10px;
+border-radius:10px;
+margin:4px;
+cursor:pointer;
+}
 </style>
 </head>
 
@@ -59,33 +65,50 @@ display:block;margin:auto;
 
 let recorder;
 let stream;
-let chunks=[];
-let recording=false;
-let seconds=0;
+let chunks = [];
+let recording = false;
+
+let seconds = 0;
 let timerId;
 
 let db;
+let wakeLock = null;
 
-const btn=document.getElementById("btn");
-const timer=document.getElementById("timer");
-const status=document.getElementById("status");
-const player=document.getElementById("player");
-const list=document.getElementById("list");
+const btn = document.getElementById("btn");
+const timer = document.getElementById("timer");
+const status = document.getElementById("status");
+const player = document.getElementById("player");
+const list = document.getElementById("list");
 
-/* ===== iOS対応：形式選択 ===== */
+/* ===== スリープ防止 ===== */
 
-function getSupportedMime(){
+async function keepAwake(){
 
-if(MediaRecorder.isTypeSupported("audio/mp4")){
-return "audio/mp4"; // iOS寄り
+try{
+
+if("wakeLock" in navigator){
+
+wakeLock = await navigator.wakeLock.request("screen");
+
+wakeLock.addEventListener("release",()=>{
+console.log("WakeLock解除");
+});
+
 }
 
-if(MediaRecorder.isTypeSupported("audio/aac")){
-return "audio/aac";
+}catch(e){
+console.log("WakeLock不可",e);
 }
 
-return ""; // 最後の手段
 }
+
+document.addEventListener("visibilitychange",async()=>{
+
+if(document.visibilityState==="visible"){
+keepAwake();
+}
+
+});
 
 /* ===== DB ===== */
 
@@ -101,22 +124,26 @@ db=e.target.result;
 load();
 };
 
+/* ===== タイマー ===== */
+
+function update(){
+timer.textContent=
+String(Math.floor(seconds/60)).padStart(2,"0")
++":"+String(seconds%60).padStart(2,"0");
+}
+
 /* ===== 録音 ===== */
 
 btn.onclick=async()=>{
 
 if(!recording){
 
-stream=await navigator.mediaDevices.getUserMedia({audio:true});
+await keepAwake();
 
+stream=await navigator.mediaDevices.getUserMedia({audio:true});
 chunks=[];
 
-const mime=getSupportedMime();
-
-recorder=new MediaRecorder(
-stream,
-mime?{mimeType:mime}:{}
-);
+recorder=new MediaRecorder(stream);
 
 recorder.ondataavailable=e=>{
 chunks.push(e.data);
@@ -124,11 +151,7 @@ chunks.push(e.data);
 
 recorder.onstop=()=>{
 
-const blob=new Blob(chunks,{
-type:mime||"audio/mp4"
-});
-
-/* ★重要：URL保存 */
+const blob=new Blob(chunks,{type:"audio/webm"});
 const url=URL.createObjectURL(blob);
 
 db.transaction("rec","readwrite")
@@ -143,6 +166,12 @@ load();
 stream.getTracks().forEach(t=>t.stop());
 
 player.src=url;
+
+if(wakeLock){
+wakeLock.release();
+wakeLock=null;
+}
+
 };
 
 recorder.start();
@@ -152,26 +181,28 @@ btn.classList.add("recording");
 status.textContent="録音中";
 
 seconds=0;
+update();
+
 timerId=setInterval(()=>{
 seconds++;
-timer.textContent=
-String(Math.floor(seconds/60)).padStart(2,"0")
-+":"+String(seconds%60).padStart(2,"0");
+update();
 },1000);
 
 }else{
 
 recorder.stop();
+
 clearInterval(timerId);
 
 recording=false;
 btn.classList.remove("recording");
 status.textContent="録音完了";
+
 }
 
 };
 
-/* ===== 再生リスト ===== */
+/* ===== 一覧 ===== */
 
 function load(){
 
@@ -186,14 +217,26 @@ db.transaction("rec")
 e.target.result.reverse().forEach(r=>{
 
 const div=document.createElement("div");
+
 div.innerHTML=`
 <div>${r.name}</div>
 <button>再生</button>
+<button>削除</button>
 `;
 
-div.querySelector("button").onclick=()=>{
+const [play,del]=div.querySelectorAll("button");
+
+play.onclick=()=>{
 player.src=r.url;
-player.play().catch(()=>alert("再生できない形式です"));
+player.play().catch(()=>{});
+};
+
+del.onclick=()=>{
+db.transaction("rec","readwrite")
+.objectStore("rec")
+.delete(r.id);
+
+load();
 };
 
 list.appendChild(div);
