@@ -15,7 +15,6 @@
 
 body{
     min-height:100vh;
-    padding:20px;
 
     font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 
@@ -24,6 +23,8 @@ body{
     rgba(255,255,255,.15),
     transparent 35%),
     linear-gradient(135deg,#8a6a4d,#6f533d);
+
+    padding:20px;
 }
 
 .container{
@@ -32,6 +33,7 @@ body{
 }
 
 .card{
+
     margin-bottom:20px;
 
     padding:24px;
@@ -49,18 +51,24 @@ body{
 }
 
 .logo{
+
     text-align:center;
+
     font-size:2rem;
     font-weight:700;
 }
 
 .subtitle{
+
     text-align:center;
+
     opacity:.8;
+
     margin-top:6px;
 }
 
 .timer{
+
     text-align:center;
 
     font-size:3rem;
@@ -85,8 +93,6 @@ body{
     background:
     radial-gradient(circle at 30% 30%,
     #5e9a70,#346344);
-
-    transition:.25s;
 }
 
 .record-btn.recording{
@@ -101,9 +107,9 @@ body{
     width:28px;
     height:28px;
 
-    border-radius:50%;
-
     background:white;
+
+    border-radius:50%;
 
     margin:auto;
 }
@@ -111,19 +117,20 @@ body{
 .status{
 
     text-align:center;
+
     margin-top:20px;
 }
 
 audio{
 
     width:100%;
+
     margin-top:20px;
 }
 
 .section-title{
 
     font-size:1.2rem;
-    font-weight:600;
 
     margin-bottom:12px;
 }
@@ -132,6 +139,7 @@ audio{
 
     display:flex;
     flex-direction:column;
+
     gap:12px;
 }
 
@@ -153,6 +161,7 @@ audio{
 .record-date{
 
     opacity:.7;
+
     font-size:.85rem;
 
     margin-top:4px;
@@ -161,6 +170,7 @@ audio{
 .record-actions{
 
     display:flex;
+
     gap:8px;
 
     margin-top:10px;
@@ -171,20 +181,96 @@ audio{
     padding:8px 12px;
 
     border:none;
+
     border-radius:10px;
 
     cursor:pointer;
 }
 
-.debug{
+/* モーダル */
 
-    margin-top:15px;
+.modal-overlay{
 
-    font-size:12px;
+    position:fixed;
 
-    opacity:.8;
+    inset:0;
 
-    word-break:break-all;
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    background:rgba(0,0,0,.35);
+
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+
+    z-index:999;
+}
+
+.modal{
+
+    width:min(90vw,340px);
+
+    padding:22px;
+
+    border-radius:24px;
+
+    background:rgba(255,255,255,.18);
+
+    border:1px solid rgba(255,255,255,.25);
+
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+
+    color:white;
+}
+
+.modal-title{
+
+    font-size:1.2rem;
+
+    font-weight:700;
+
+    margin-bottom:10px;
+}
+
+.modal-message{
+
+    margin-bottom:15px;
+}
+
+.modal-input{
+
+    width:100%;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:12px;
+
+    margin-bottom:15px;
+}
+
+.modal-buttons{
+
+    display:flex;
+
+    gap:10px;
+}
+
+.modal-btn{
+
+    flex:1;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:12px;
+
+    cursor:pointer;
 }
 
 </style>
@@ -194,66 +280,112 @@ audio{
 
 <div class="container">
 
-    <div class="card">
+<div class="card">
 
-        <div class="logo">NoteMap</div>
+<div class="logo">
+NoteMap
+</div>
 
-        <div class="subtitle">
-            録音
-        </div>
+<div class="subtitle">
+録音
+</div>
 
-        <div class="timer" id="timer">
-            00:00
-        </div>
+<div class="timer" id="timer">
+00:00
+</div>
 
-        <button
-            id="recordBtn"
-            class="record-btn">
+<button
+id="recordBtn"
+class="record-btn">
 
-            <div class="record-dot"></div>
+<div class="record-dot"></div>
 
-        </button>
+</button>
 
-        <div
-            id="status"
-            class="status">
+<div
+id="status"
+class="status">
 
-            タップして録音開始
+タップして録音開始
 
-        </div>
+</div>
 
-        <audio
-            id="player"
-            controls>
-        </audio>
+<audio
+id="player"
+controls>
+</audio>
 
-        <div
-            id="debug"
-            class="debug">
-        </div>
+</div>
 
-    </div>
+<div class="card">
 
-    <div class="card">
+<div class="section-title">
+録音一覧
+</div>
 
-        <div class="section-title">
-            録音一覧
-        </div>
+<div
+id="recordList"
+class="record-list">
+</div>
 
-        <div
-            id="recordList"
-            class="record-list">
-        </div>
+</div>
 
-    </div>
+</div>
+
+<!-- モーダル -->
+
+<div
+id="modalOverlay"
+class="modal-overlay">
+
+<div class="modal">
+
+<div
+id="modalTitle"
+class="modal-title">
+タイトル
+</div>
+
+<div
+id="modalMessage"
+class="modal-message">
+メッセージ
+</div>
+
+<input
+id="modalInput"
+class="modal-input"
+type="text">
+
+<div class="modal-buttons">
+
+<button
+id="modalCancel"
+class="modal-btn">
+
+キャンセル
+
+</button>
+
+<button
+id="modalOk"
+class="modal-btn">
+
+OK
+
+</button>
+
+</div>
+
+</div>
 
 </div>
 <script>
 
 let mediaRecorder;
 let currentStream;
-
 let chunks = [];
+
 let recording = false;
 
 let seconds = 0;
@@ -261,28 +393,210 @@ let timerInterval;
 
 let db;
 
-const btn = document.getElementById("recordBtn");
-const timer = document.getElementById("timer");
-const statusText = document.getElementById("status");
-const player = document.getElementById("player");
-const recordList = document.getElementById("recordList");
-const debug = document.getElementById("debug");
+const btn =
+document.getElementById(
+"recordBtn"
+);
+
+const timer =
+document.getElementById(
+"timer"
+);
+
+const statusText =
+document.getElementById(
+"status"
+);
+
+const player =
+document.getElementById(
+"player"
+);
+
+const recordList =
+document.getElementById(
+"recordList"
+);
+
+/* モーダル */
+
+const modalOverlay =
+document.getElementById(
+"modalOverlay"
+);
+
+const modalTitle =
+document.getElementById(
+"modalTitle"
+);
+
+const modalMessage =
+document.getElementById(
+"modalMessage"
+);
+
+const modalInput =
+document.getElementById(
+"modalInput"
+);
+
+const modalCancel =
+document.getElementById(
+"modalCancel"
+);
+
+const modalOk =
+document.getElementById(
+"modalOk"
+);
+
+let modalResolve;
+
+/* タイマー */
 
 function updateTimer(){
 
     const m =
     String(
-    Math.floor(seconds / 60)
-    ).padStart(2,"0");
+    Math.floor(
+    seconds / 60
+    )
+    ).padStart(
+    2,
+    "0"
+    );
 
     const s =
     String(
     seconds % 60
-    ).padStart(2,"0");
+    ).padStart(
+    2,
+    "0"
+    );
 
     timer.textContent =
     `${m}:${s}`;
 }
+
+/* モーダル */
+
+function closeModal(){
+
+    modalOverlay.style.display =
+    "none";
+}
+
+function showConfirm(
+title,
+message
+){
+
+    return new Promise(
+    resolve=>{
+
+        modalResolve =
+        resolve;
+
+        modalTitle.textContent =
+        title;
+
+        modalMessage.textContent =
+        message;
+
+        modalInput.style.display =
+        "none";
+
+        modalOverlay.style.display =
+        "flex";
+
+    }
+    );
+
+}
+
+function showPrompt(
+title,
+message,
+defaultValue=""
+){
+
+    return new Promise(
+    resolve=>{
+
+        modalResolve =
+        resolve;
+
+        modalTitle.textContent =
+        title;
+
+        modalMessage.textContent =
+        message;
+
+        modalInput.style.display =
+        "block";
+
+        modalInput.value =
+        defaultValue;
+
+        modalOverlay.style.display =
+        "flex";
+
+        modalInput.focus();
+
+    }
+    );
+
+}
+
+modalCancel.onclick =
+()=>{
+
+    closeModal();
+
+    if(
+    modalResolve
+    ){
+
+        modalResolve(
+        null
+        );
+
+    }
+
+};
+
+modalOk.onclick =
+()=>{
+
+    const value =
+
+    modalInput.style.display
+    ===
+    "none"
+
+    ?
+
+    true
+
+    :
+
+    modalInput.value;
+
+    closeModal();
+
+    if(
+    modalResolve
+    ){
+
+        modalResolve(
+        value
+        );
+
+    }
+
+};
+
+/* IndexedDB */
 
 const request =
 indexedDB.open(
@@ -315,15 +629,18 @@ request.onsuccess =
 
 };
 
-request.onerror = ()=>{
+request.onerror =
+()=>{
 
     alert(
-    "データベースを開けません"
+    "データベースエラー"
     );
 
 };
 
-function saveRecord(blob){
+function saveRecord(
+blob
+){
 
     const transaction =
     db.transaction(
@@ -336,17 +653,18 @@ function saveRecord(blob){
     "records"
     );
 
-    const now =
-    new Date();
-
     store.add({
 
         name:
         "録音 " +
-        now.toLocaleString("ja-JP"),
+        new Date()
+        .toLocaleString(
+        "ja-JP"
+        ),
 
         date:
-        now.toISOString(),
+        new Date()
+        .toISOString(),
 
         blob:
         blob
@@ -362,11 +680,15 @@ function saveRecord(blob){
 
 }
 
+/* 録音 */
+
 btn.addEventListener(
 "click",
 async ()=>{
 
-    if(!recording){
+    if(
+    !recording
+    ){
 
         try{
 
@@ -375,11 +697,7 @@ async ()=>{
             .mediaDevices
             .getUserMedia({
 
-                audio:{
-                    echoCancellation:true,
-                    noiseSuppression:true,
-                    autoGainControl:false
-                }
+                audio:true
 
             });
 
@@ -407,10 +725,9 @@ async ()=>{
 
             mediaRecorder
             .ondataavailable =
-            (e)=>{
+            e=>{
 
                 if(
-                e.data &&
                 e.data.size > 0
                 ){
 
@@ -421,8 +738,7 @@ async ()=>{
                 }
 
             };
-
-            mediaRecorder.onstop =
+                        mediaRecorder.onstop =
             ()=>{
 
                 const blob =
@@ -443,11 +759,6 @@ async ()=>{
                 url;
 
                 player.load();
-
-                debug.innerHTML =
-                "サイズ: " +
-                blob.size +
-                " bytes";
 
                 saveRecord(
                 blob
@@ -500,10 +811,6 @@ async ()=>{
 
         }catch(err){
 
-            alert(
-            "マイクを許可してください"
-            );
-
             console.error(
             err
             );
@@ -544,9 +851,13 @@ async ()=>{
 });
 
 updateTimer();
+
+/* 一覧表示 */
+
 function loadRecords(){
 
-    recordList.innerHTML = "";
+    recordList.innerHTML =
+    "";
 
     const transaction =
     db.transaction(
@@ -628,6 +939,8 @@ record
     actions.className =
     "record-actions";
 
+    /* 再生 */
+
     const playBtn =
     document.createElement(
     "button"
@@ -659,6 +972,8 @@ record
 
     };
 
+    /* 名前変更 */
+
     const renameBtn =
     document.createElement(
     "button"
@@ -671,11 +986,12 @@ record
     "名前変更";
 
     renameBtn.onclick =
-    ()=>{
+    async ()=>{
 
         const newName =
-        prompt(
-        "新しい名前",
+        await showPrompt(
+        "名前変更",
+        "新しい名前を入力",
         record.name
         );
 
@@ -695,7 +1011,8 @@ record
         );
 
         const store =
-        transaction.objectStore(
+        transaction
+        .objectStore(
         "records"
         );
 
@@ -712,6 +1029,8 @@ record
 
     };
 
+    /* 削除 */
+
     const deleteBtn =
     document.createElement(
     "button"
@@ -724,12 +1043,16 @@ record
     "削除";
 
     deleteBtn.onclick =
-    ()=>{
+    async ()=>{
+
+        const ok =
+        await showConfirm(
+        "削除確認",
+        "この録音を削除しますか？"
+        );
 
         if(
-        !confirm(
-        "削除しますか？"
-        )
+        !ok
         ){
             return;
         }
@@ -741,7 +1064,8 @@ record
         );
 
         const store =
-        transaction.objectStore(
+        transaction
+        .objectStore(
         "records"
         );
 
