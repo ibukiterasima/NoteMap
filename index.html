@@ -20,26 +20,22 @@ body{
     font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 
     background:
-    radial-gradient(
-    circle at top left,
+    radial-gradient(circle at top left,
     rgba(255,255,255,.15),
-    transparent 35%
-    ),
-    linear-gradient(
-    135deg,
-    #8a6a4d,
-    #6f533d
-    );
+    transparent 35%),
+    linear-gradient(135deg,#8a6a4d,#6f533d);
 
     padding:20px;
 }
 
+/* コンテナ */
+
 .container{
-
     max-width:520px;
-
     margin:auto;
 }
+
+/* カード */
 
 .card{
 
@@ -51,346 +47,108 @@ body{
 
     border-radius:30px;
 
-    background:
-    rgba(255,255,255,.18);
+    background:rgba(255,255,255,.18);
 
-    border:
-    1px solid rgba(
-    255,255,255,.25
-    );
+    border:1px solid rgba(255,255,255,.25);
 
-    backdrop-filter:
-    blur(22px);
-
-    -webkit-backdrop-filter:
-    blur(22px);
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
 }
 
+/* タイトル */
+
 .logo{
-
     text-align:center;
-
     font-size:2rem;
-
     font-weight:700;
 }
 
 .subtitle{
-
     text-align:center;
-
     opacity:.8;
-
     margin-top:6px;
 }
 
+/* タイマー */
+
 .timer{
-
     text-align:center;
-
     font-size:3rem;
-
     font-weight:200;
-
     margin:24px 0;
 }
 
 /* 波 */
 
 .wave-wrap{
-
-    height:32px;
-
+    height:40px;
     display:flex;
-
     justify-content:center;
-
     align-items:center;
-
-    margin-bottom:18px;
+    margin-bottom:10px;
 }
 
 .wave{
-
     width:220px;
-
     height:24px;
 }
 
 .wave path{
-
     fill:none;
-
     stroke:white;
-
     stroke-width:2;
-
-    opacity:.45;
-
+    opacity:.5;
     stroke-linecap:round;
 }
+
+/* 録音ボタン */
 
 .record-btn{
 
     width:120px;
-
     height:120px;
 
     display:block;
-
     margin:auto;
 
     border:none;
-
     border-radius:50%;
 
     cursor:pointer;
 
     background:
-    radial-gradient(
-    circle at 30% 30%,
-    #5e9a70,
-    #346344
-    );
+    radial-gradient(circle at 30% 30%,
+    #5e9a70,#346344);
 
-    transition:.25s;
+    transition:.2s;
 }
 
 .record-btn.recording{
-
     background:
-    radial-gradient(
-    circle at 30% 30%,
-    #ff7777,
-    #d62828
-    );
+    radial-gradient(circle at 30% 30%,
+    #ff7777,#d62828);
 }
 
 .record-dot{
-
     width:28px;
-
     height:28px;
-
     background:white;
-
     border-radius:50%;
-
     margin:auto;
 }
 
+/* ステータス */
+
 .status{
-
     text-align:center;
-
     margin-top:20px;
 }
+
+/* オーディオ */
 
 audio{
-
     width:100%;
-
     margin-top:20px;
-}
-
-.section-title{
-
-    font-size:1.2rem;
-
-    margin-bottom:12px;
-}
-
-/* 検索 */
-
-.search-input{
-
-    width:100%;
-
-    padding:12px;
-
-    border:none;
-
-    border-radius:14px;
-
-    margin-bottom:12px;
-
-    background:
-    rgba(255,255,255,.15);
-
-    color:white;
-
-    outline:none;
-
-    backdrop-filter:blur(10px);
-
-    -webkit-backdrop-filter:blur(10px);
-}
-
-.search-input::placeholder{
-
-    color:
-    rgba(255,255,255,.65);
-}
-
-.record-list{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:12px;
-}
-
-.record-item{
-
-    padding:12px;
-
-    border-radius:18px;
-
-    background:
-    rgba(255,255,255,.12);
-
-    border:
-    1px solid rgba(
-    255,255,255,.15
-    );
-}
-
-.record-name{
-
-    font-weight:600;
-}
-
-.record-date{
-
-    opacity:.7;
-
-    font-size:.85rem;
-
-    margin-top:4px;
-}
-
-.record-actions{
-
-    display:flex;
-
-    gap:8px;
-
-    margin-top:10px;
-}
-
-.small-btn{
-
-    padding:8px 12px;
-
-    border:none;
-
-    border-radius:10px;
-
-    cursor:pointer;
-
-    background:white;
-}
-
-/* モーダル */
-
-.modal-overlay{
-
-    position:fixed;
-
-    inset:0;
-
-    display:none;
-
-    justify-content:center;
-
-    align-items:center;
-
-    background:
-    rgba(0,0,0,.35);
-
-    backdrop-filter:
-    blur(10px);
-
-    -webkit-backdrop-filter:
-    blur(10px);
-
-    z-index:999;
-}
-
-.modal{
-
-    width:min(
-    90vw,
-    340px
-    );
-
-    padding:22px;
-
-    border-radius:24px;
-
-    background:
-    rgba(255,255,255,.18);
-
-    border:
-    1px solid rgba(
-    255,255,255,.25
-    );
-
-    backdrop-filter:
-    blur(22px);
-
-    -webkit-backdrop-filter:
-    blur(22px);
-
-    color:white;
-}
-
-.modal-title{
-
-    font-size:1.2rem;
-
-    font-weight:700;
-
-    margin-bottom:10px;
-}
-
-.modal-message{
-
-    margin-bottom:15px;
-}
-
-.modal-input{
-
-    width:100%;
-
-    padding:12px;
-
-    border:none;
-
-    border-radius:12px;
-
-    margin-bottom:15px;
-}
-
-.modal-buttons{
-
-    display:flex;
-
-    gap:10px;
-}
-
-.modal-btn{
-
-    flex:1;
-
-    padding:12px;
-
-    border:none;
-
-    border-radius:12px;
-
-    cursor:pointer;
 }
 
 </style>
@@ -400,128 +158,34 @@ audio{
 
 <div class="container">
 
-<div class="card">
+    <div class="card">
 
-<div class="logo">
-NoteMap
-</div>
+        <div class="logo">NoteMap</div>
+        <div class="subtitle">録音</div>
 
-<div class="subtitle">
-録音
-</div>
+        <div class="timer" id="timer">00:00</div>
 
-<div class="timer" id="timer">
-00:00
-</div>
+        <!-- 波 -->
+        <div class="wave-wrap">
 
-<div class="wave-wrap">
+            <svg class="wave" viewBox="0 0 200 20">
+                <path id="wavePath"
+                d="M0 10 Q 25 10 50 10 T 100 10 T 150 10 T 200 10"/>
+            </svg>
 
-<svg
-class="wave"
-viewBox="0 0 200 20">
+        </div>
 
-<path
-id="wavePath"
-d="M0 10
-Q 25 10 50 10
-T 100 10
-T 150 10
-T 200 10"/>
+        <button id="recordBtn" class="record-btn">
+            <div class="record-dot"></div>
+        </button>
 
-</svg>
+        <div class="status" id="status">
+            タップして録音開始
+        </div>
 
-</div>
+        <audio id="player" controls></audio>
 
-<button
-id="recordBtn"
-class="record-btn">
-
-<div class="record-dot"></div>
-
-</button>
-
-<div
-id="status"
-class="status">
-
-タップして録音開始
-
-</div>
-
-<audio
-id="player"
-controls>
-</audio>
-
-</div>
-
-<div class="card">
-
-<div class="section-title">
-録音一覧
-</div>
-
-<input
-id="searchInput"
-class="search-input"
-type="text"
-placeholder="検索">
-
-<div
-id="recordList"
-class="record-list">
-</div>
-
-</div>
-
-</div>
-
-<!-- モーダル -->
-
-<div
-id="modalOverlay"
-class="modal-overlay">
-
-<div class="modal">
-
-<div
-id="modalTitle"
-class="modal-title">
-タイトル
-</div>
-
-<div
-id="modalMessage"
-class="modal-message">
-メッセージ
-</div>
-
-<input
-id="modalInput"
-class="modal-input"
-type="text">
-
-<div class="modal-buttons">
-
-<button
-id="modalCancel"
-class="modal-btn">
-
-キャンセル
-
-</button>
-
-<button
-id="modalOk"
-class="modal-btn">
-
-OK
-
-</button>
-
-</div>
-
-</div>
+    </div>
 
 </div>
 
@@ -536,554 +200,394 @@ let recording = false;
 let seconds = 0;
 let timerInterval;
 
-let waveInterval;
-
-let db;
+let audioCtx;
+let analyser;
+let dataArray;
+let source;
 
 const btn =
-document.getElementById(
-"recordBtn"
-);
+document.getElementById("recordBtn");
 
 const timer =
-document.getElementById(
-"timer"
-);
+document.getElementById("timer");
 
 const statusText =
-document.getElementById(
-"status"
-);
+document.getElementById("status");
 
 const player =
-document.getElementById(
-"player"
-);
-
-const recordList =
-document.getElementById(
-"recordList"
-);
-
-const searchInput =
-document.getElementById(
-"searchInput"
-);
+document.getElementById("player");
 
 const wavePath =
-document.getElementById(
-"wavePath"
-);
-
-/* モーダル */
-
-const modalOverlay =
-document.getElementById(
-"modalOverlay"
-);
-
-const modalTitle =
-document.getElementById(
-"modalTitle"
-);
-
-const modalMessage =
-document.getElementById(
-"modalMessage"
-);
-
-const modalInput =
-document.getElementById(
-"modalInput"
-);
-
-const modalCancel =
-document.getElementById(
-"modalCancel"
-);
-
-const modalOk =
-document.getElementById(
-"modalOk"
-);
-
-let modalResolve;
+document.getElementById("wavePath");
 
 /* タイマー */
 
 function updateTimer(){
 
     const m =
-    String(
-    Math.floor(
-    seconds / 60
-    )
-    ).padStart(
-    2,
-    "0"
-    );
+    String(Math.floor(seconds / 60)).padStart(2,"0");
 
     const s =
-    String(
-    seconds % 60
-    ).padStart(
-    2,
-    "0"
-    );
+    String(seconds % 60).padStart(2,"0");
 
-    timer.textContent =
-    `${m}:${s}`;
+    timer.textContent = `${m}:${s}`;
 }
 
-/* 波 */
+/* マイク開始 */
+
+async function startMic(){
+
+    currentStream =
+    await navigator.mediaDevices.getUserMedia({
+        audio:true
+    });
+
+    audioCtx =
+    new (window.AudioContext || window.webkitAudioContext)();
+
+    source =
+    audioCtx.createMediaStreamSource(currentStream);
+
+    analyser =
+    audioCtx.createAnalyser();
+
+    analyser.fftSize = 512;
+
+    source.connect(analyser);
+
+    dataArray =
+    new Uint8Array(analyser.frequencyBinCount);
+}
+
+/* 波のベース（あとで音で動かす） */
+
+function setFlatWave(){
+
+    wavePath.setAttribute(
+    "d",
+    "M0 10 Q 25 10 50 10 T 100 10 T 150 10 T 200 10"
+    );
+
+}
+
+setFlatWave();
 
 function startWave(){
 
-    clearInterval(
-    waveInterval
-    );
+    const draw = () => {
 
-    waveInterval =
-    setInterval(()=>{
+        if(!analyser) return;
 
-        const a =
-        Math.random()*5;
+        analyser.getByteTimeDomainData(dataArray);
 
-        const b =
-        Math.random()*5;
+        let sum = 0;
 
-        const c =
-        Math.random()*5;
+        for(let i=0;i<dataArray.length;i++){
+
+            let v = dataArray[i] - 128;
+            sum += v * v;
+
+        }
+
+        let volume =
+        Math.sqrt(sum / dataArray.length);
+
+        let amp =
+        Math.min(volume / 18, 12);
+
+        const y1 = 10 - amp;
+        const y2 = 10 + amp * 0.6;
+        const y3 = 10 - amp * 0.4;
 
         wavePath.setAttribute(
-
         "d",
-
         `M0 10
-        Q 25 ${10-a}
+        Q 25 ${y1}
         50 10
-        T 100 ${10+b}
-        T 150 ${10-c}
+        T 100 ${y2}
+        T 150 ${y3}
         T 200 10`
-
         );
 
-    },150);
-
-}
-
-function stopWave(){
-
-    clearInterval(
-    waveInterval
-    );
-
-    wavePath.setAttribute(
-
-    "d",
-
-    "M0 10 Q 25 10 50 10 T 100 10 T 150 10 T 200 10"
-
-    );
-}
-
-/* モーダル */
-
-function closeModal(){
-
-    modalOverlay.style.display =
-    "none";
-}
-
-function showConfirm(
-title,
-message
-){
-
-    return new Promise(
-    resolve=>{
-
-        modalResolve =
-        resolve;
-
-        modalTitle.textContent =
-        title;
-
-        modalMessage.textContent =
-        message;
-
-        modalInput.style.display =
-        "none";
-
-        modalOverlay.style.display =
-        "flex";
-
-    });
-}
-
-function showPrompt(
-title,
-message,
-defaultValue=""
-){
-
-    return new Promise(
-    resolve=>{
-
-        modalResolve =
-        resolve;
-
-        modalTitle.textContent =
-        title;
-
-        modalMessage.textContent =
-        message;
-
-        modalInput.style.display =
-        "block";
-
-        modalInput.value =
-        defaultValue;
-
-        modalOverlay.style.display =
-        "flex";
-
-        modalInput.focus();
-
-    });
-}
-
-modalCancel.onclick =
-()=>{
-
-    closeModal();
-
-    if(
-    modalResolve
-    ){
-
-        modalResolve(
-        null
-        );
-    }
-};
-
-modalOk.onclick =
-()=>{
-
-    const value =
-
-    modalInput.style.display
-    ===
-    "none"
-
-    ?
-
-    true
-
-    :
-
-    modalInput.value;
-
-    closeModal();
-
-    if(
-    modalResolve
-    ){
-
-        modalResolve(
-        value
-        );
-    }
-};
-
-/* IndexedDB */
-
-const request =
-indexedDB.open(
-"NoteMapDB",
-1
-);
-
-request.onupgradeneeded =
-(event)=>{
-
-    db =
-    event.target.result;
-
-    db.createObjectStore(
-    "records",
-    {
-        keyPath:"id",
-        autoIncrement:true
-    });
-};
-
-request.onsuccess =
-(event)=>{
-
-    db =
-    event.target.result;
-
-    loadRecords();
-};
-
-request.onerror =
-()=>{
-
-    console.error(
-    "DB Error"
-    );
-};
-
-function saveRecord(
-blob
-){
-
-    const transaction =
-    db.transaction(
-    ["records"],
-    "readwrite"
-    );
-
-    const store =
-    transaction.objectStore(
-    "records"
-    );
-
-    store.add({
-
-        name:
-        "録音 " +
-        new Date()
-        .toLocaleString(
-        "ja-JP"
-        ),
-
-        date:
-        new Date()
-        .toISOString(),
-
-        blob:
-        blob
-
-    });
-
-    transaction.oncomplete =
-    ()=>{
-
-        loadRecords();
+        requestAnimationFrame(draw);
 
     };
+
+    draw();
 }
 
-/* 録音 */
+/* 録音開始 */
 
-btn.addEventListener(
-"click",
-async ()=>{
+btn.addEventListener("click", async ()=>{
 
     if(!recording){
 
         try{
 
-            currentStream =
-            await navigator
-            .mediaDevices
-            .getUserMedia({
-                audio:true
-            });
+            await startMic();
 
             chunks = [];
 
             let options = {};
 
-            if(
-            MediaRecorder
-            .isTypeSupported(
-            "audio/mp4"
-            )
-            ){
-                options.mimeType =
-                "audio/mp4";
+            if(MediaRecorder.isTypeSupported("audio/mp4")){
+                options.mimeType = "audio/mp4";
             }
 
             mediaRecorder =
-            new MediaRecorder(
-            currentStream,
-            options
-            );
+            new MediaRecorder(currentStream, options);
 
-            mediaRecorder.ondataavailable =
-            e=>{
+            mediaRecorder.ondataavailable = (e)=>{
 
-                if(
-                e.data &&
-                e.data.size > 0
-                ){
-                    chunks.push(
-                    e.data
-                    );
+                if(e.data && e.data.size > 0){
+                    chunks.push(e.data);
                 }
 
             };
 
-            mediaRecorder.onstop =
-            ()=>{
+            mediaRecorder.onstop = ()=>{
 
                 const blob =
-                new Blob(
-                chunks,
-                {
-                    type:
-                    options.mimeType ||
-                    "audio/mp4"
+                new Blob(chunks, {
+                    type: options.mimeType || "audio/mp4"
                 });
 
                 const url =
-                URL.createObjectURL(
-                blob
-                );
+                URL.createObjectURL(blob);
 
-                player.src =
-                url;
-
+                player.src = url;
                 player.load();
 
-                saveRecord(
-                blob
-                );
+                if(currentStream){
+                    currentStream.getTracks().forEach(t=>t.stop());
+                }
 
-                if(
-                currentStream
-                ){
-                    currentStream
-                    .getTracks()
-                    .forEach(
-                    track =>
-                    track.stop()
-                    );
+                if(audioCtx){
+                    audioCtx.close();
                 }
 
             };
 
-            mediaRecorder.start(
-            1000
-            );
+            mediaRecorder.start(1000);
 
-            recording =
-            true;
+            recording = true;
 
-            startWave();
+            btn.classList.add("recording");
 
-            btn.classList.add(
-            "recording"
-            );
-
-            statusText.textContent =
-            "録音中";
+            statusText.textContent = "録音中";
 
             seconds = 0;
-
             updateTimer();
 
             timerInterval =
             setInterval(()=>{
-
                 seconds++;
-
                 updateTimer();
-
             },1000);
 
+            startWave(); // ★ここで波スタート
+
         }catch(err){
-
-            console.error(
-            err
-            );
-
+            console.error(err);
         }
 
     }else{
 
         mediaRecorder.stop();
 
-        clearInterval(
-        timerInterval
-        );
+        clearInterval(timerInterval);
 
-        stopWave();
+        recording = false;
 
-        recording =
-        false;
+        btn.classList.remove("recording");
 
-        btn.classList.remove(
-        "recording"
-        );
-
-        statusText.textContent =
-        "録音完了";
-
+        statusText.textContent = "録音完了";
     }
 
 });
 
 updateTimer();
 
-/* 一覧 */
+/* ===== IndexedDB ===== */
+
+let db;
+
+const request =
+indexedDB.open("NoteMapDB",1);
+
+request.onupgradeneeded = (e)=>{
+
+    db = e.target.result;
+
+    const store =
+    db.createObjectStore("records",{
+        keyPath:"id",
+        autoIncrement:true
+    });
+
+};
+
+request.onsuccess = (e)=>{
+
+    db = e.target.result;
+
+    loadRecords();
+
+};
+
+request.onerror = ()=>{
+
+    console.log("DB error");
+
+};
+
+/* 保存 */
+
+function saveRecord(blob){
+
+    const tx =
+    db.transaction(["records"],"readwrite");
+
+    const store =
+    tx.objectStore("records");
+
+    store.add({
+
+        name:
+        "録音 " +
+        new Date().toLocaleString("ja-JP"),
+
+        date:
+        new Date().toISOString(),
+
+        blob:blob
+
+    });
+
+    tx.oncomplete = ()=>{
+
+        loadRecords();
+
+    };
+
+}
+
+/* 一覧読み込み */
 
 function loadRecords(){
 
-    recordList.innerHTML =
-    "";
+    // ※まだUIないけど後で使う
 
-    const transaction =
-    db.transaction(
-    ["records"],
-    "readonly"
-    );
+    const tx =
+    db.transaction(["records"],"readonly");
 
     const store =
-    transaction.objectStore(
-    "records"
-    );
+    tx.objectStore("records");
 
-    const request =
+    const req =
     store.getAll();
 
-    request.onsuccess =
-    ()=>{
+    req.onsuccess = ()=>{
+
+        const records =
+        req.result.reverse();
+
+        console.log("records:",records);
+
+        // Part5で表示UI作る
+    };
+
+}
+
+const recordList =
+document.createElement("div");
+
+document.body.appendChild(recordList);
+
+/* UI用（簡易） */
+
+function renderUI(){
+
+    recordList.innerHTML = "";
+
+    db.transaction(["records"],"readonly")
+    .objectStore("records")
+    .getAll().onsuccess = (e)=>{
 
         let records =
-        request.result
-        .reverse();
+        e.target.result.reverse();
 
-        const keyword =
-        searchInput.value
-        .toLowerCase();
+        records.forEach(record=>{
 
-        if(keyword){
+            const item =
+            document.createElement("div");
 
-            records =
-            records.filter(
-            record=>
+            item.style.cssText =
+            `
+            background:rgba(255,255,255,.12);
+            padding:12px;
+            margin:10px;
+            border-radius:16px;
+            color:white;
+            `;
 
-            record.name
-            .toLowerCase()
-            .includes(
-            keyword
-            )
+            const title =
+            document.createElement("div");
 
-            );
+            title.textContent = record.name;
 
-        }
+            const btnWrap =
+            document.createElement("div");
 
-        records.forEach(
-        record=>{
+            btnWrap.style.marginTop = "8px";
 
-            createRecordCard(
-            record
-            );
+            /* 再生 */
+
+            const play =
+            document.createElement("button");
+
+            play.textContent = "再生";
+
+            play.onclick = ()=>{
+
+                const url =
+                URL.createObjectURL(record.blob);
+
+                player.src = url;
+                player.play();
+
+            };
+
+            /* 削除 */
+
+            const del =
+            document.createElement("button");
+
+            del.textContent = "削除";
+
+            del.onclick = ()=>{
+
+                const tx =
+                db.transaction(["records"],"readwrite");
+
+                tx.objectStore("records")
+                .delete(record.id);
+
+                tx.oncomplete = ()=>{
+
+                    renderUI();
+
+                };
+
+            };
+
+            btnWrap.appendChild(play);
+            btnWrap.appendChild(del);
+
+            item.appendChild(title);
+            item.appendChild(btnWrap);
+
+            recordList.appendChild(item);
 
         });
 
@@ -1091,222 +595,53 @@ function loadRecords(){
 
 }
 
-function createRecordCard(
-record
-){
+/* 保存後にUI更新 */
 
-    const item =
-    document.createElement(
-    "div"
-    );
+function saveRecord(blob){
 
-    item.className =
-    "record-item";
+    const tx =
+    db.transaction(["records"],"readwrite");
 
-    const name =
-    document.createElement(
-    "div"
-    );
+    tx.objectStore("records").add({
 
-    name.className =
-    "record-name";
+        name:
+        "録音 " +
+        new Date().toLocaleString("ja-JP"),
 
-    name.textContent =
-    record.name;
+        date:
+        new Date().toISOString(),
 
-    const date =
-    document.createElement(
-    "div"
-    );
+        blob:blob
 
-    date.className =
-    "record-date";
+    });
 
-    date.textContent =
-    new Date(
-    record.date
-    ).toLocaleString(
-    "ja-JP"
-    );
+    tx.oncomplete = ()=>{
 
-    const actions =
-    document.createElement(
-    "div"
-    );
-
-    actions.className =
-    "record-actions";
-
-    const playBtn =
-    document.createElement(
-    "button"
-    );
-
-    playBtn.className =
-    "small-btn";
-
-    playBtn.textContent =
-    "再生";
-
-    playBtn.onclick =
-    ()=>{
-
-        const url =
-        URL.createObjectURL(
-        record.blob
-        );
-
-        player.src =
-        url;
-
-        player.load();
-
-        player.play();
+        renderUI();
 
     };
-
-    const renameBtn =
-    document.createElement(
-    "button"
-    );
-
-    renameBtn.className =
-    "small-btn";
-
-    renameBtn.textContent =
-    "名前変更";
-
-    renameBtn.onclick =
-    async ()=>{
-
-        const newName =
-        await showPrompt(
-        "名前変更",
-        "新しい名前を入力",
-        record.name
-        );
-
-        if(
-        !newName
-        ){
-            return;
-        }
-
-        record.name =
-        newName;
-
-        const transaction =
-        db.transaction(
-        ["records"],
-        "readwrite"
-        );
-
-        const store =
-        transaction
-        .objectStore(
-        "records"
-        );
-
-        store.put(
-        record
-        );
-
-        transaction.oncomplete =
-        ()=>{
-
-            loadRecords();
-
-        };
-
-    };
-
-    const deleteBtn =
-    document.createElement(
-    "button"
-    );
-
-    deleteBtn.className =
-    "small-btn";
-
-    deleteBtn.textContent =
-    "削除";
-
-    deleteBtn.onclick =
-    async ()=>{
-
-        const ok =
-        await showConfirm(
-        "削除確認",
-        "この録音を削除しますか？"
-        );
-
-        if(
-        !ok
-        ){
-            return;
-        }
-
-        const transaction =
-        db.transaction(
-        ["records"],
-        "readwrite"
-        );
-
-        const store =
-        transaction
-        .objectStore(
-        "records"
-        );
-
-        store.delete(
-        record.id
-        );
-
-        transaction.oncomplete =
-        ()=>{
-
-            loadRecords();
-
-        };
-
-    };
-
-    actions.appendChild(
-    playBtn
-    );
-
-    actions.appendChild(
-    renameBtn
-    );
-
-    actions.appendChild(
-    deleteBtn
-    );
-
-    item.appendChild(
-    name
-    );
-
-    item.appendChild(
-    date
-    );
-
-    item.appendChild(
-    actions
-    );
-
-    recordList.appendChild(
-    item
-    );
 
 }
 
-searchInput.addEventListener(
-"input",
-loadRecords
-);
+/* 初期ロード */
 
-</script>
+request.onsuccess = (e)=>{
 
-</body>
-</html>
+    db = e.target.result;
+
+    renderUI();
+
+};
+
+/* 録音停止時に保存呼び出し（重要） */
+
+mediaRecorder.onstop = ()=>{
+
+    const blob =
+    new Blob(chunks,{
+        type:"audio/mp4"
+    });
+
+    saveRecord(blob);
+
+};
