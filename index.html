@@ -1,6 +1,268 @@
-265
-Expected branch to point to
-266
-"77cfdbaa84cfd5c7183d33c851e754282d
-267
-a14b72" but it did not. Pull and try again.
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoteMap</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+    background:
+    radial-gradient(circle at top left, rgba(255,255,255,0.15), transparent 35%),
+    linear-gradient(135deg,#8a6a4d,#6f533d);
+    padding:20px;
+}
+
+.card{
+    width:min(92vw,420px);
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+    background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:32px;
+    padding:32px 24px;
+    text-align:center;
+    color:white;
+}
+
+.logo{
+    font-size:2rem;
+    font-weight:700;
+}
+
+.subtitle{
+    margin-top:6px;
+    opacity:.8;
+}
+
+.timer{
+    margin:30px 0;
+    font-size:3.5rem;
+    font-weight:200;
+    letter-spacing:.08em;
+}
+
+.record-btn{
+    width:110px;
+    height:110px;
+    border:none;
+    border-radius:50%;
+    cursor:pointer;
+    background:
+    radial-gradient(circle at 30% 30%,#5e9a70,#346344);
+    margin:auto;
+    transition:.25s;
+}
+
+.record-btn.recording{
+    background:
+    radial-gradient(circle at 30% 30%,#ff7777,#d62828);
+}
+
+.record-dot{
+    width:28px;
+    height:28px;
+    border-radius:50%;
+    background:white;
+    margin:auto;
+}
+
+.status{
+    margin-top:20px;
+}
+
+audio{
+    width:100%;
+    margin-top:25px;
+}
+
+.debug{
+    margin-top:15px;
+    font-size:12px;
+    word-break:break-all;
+    opacity:.9;
+    text-align:left;
+}
+
+button.download{
+    margin-top:15px;
+    padding:10px 16px;
+    border:none;
+    border-radius:10px;
+    background:white;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+    <div class="logo">NoteMap</div>
+    <div class="subtitle">録音</div>
+
+    <div class="timer" id="timer">00:00</div>
+
+    <button class="record-btn" id="recordBtn">
+        <div class="record-dot"></div>
+    </button>
+
+    <div class="status" id="status">
+        タップして録音開始
+    </div>
+
+    <audio id="player" controls></audio>
+
+    <button id="downloadBtn" class="download" style="display:none;">
+        録音を保存
+    </button>
+
+    <div class="debug" id="debug"></div>
+
+</div>
+
+<script>
+let mediaRecorder;
+let chunks = [];
+let recording = false;
+
+let seconds = 0;
+let timerInterval;
+
+let currentBlob = null;
+
+const btn = document.getElementById("recordBtn");
+const timer = document.getElementById("timer");
+const statusText = document.getElementById("status");
+const player = document.getElementById("player");
+const debug = document.getElementById("debug");
+const downloadBtn = document.getElementById("downloadBtn");
+
+function updateTimer(){
+    const m = String(Math.floor(seconds/60)).padStart(2,"0");
+    const s = String(seconds%60).padStart(2,"0");
+    timer.textContent = `${m}:${s}`;
+}
+
+btn.addEventListener("click", async () => {
+
+    if(!recording){
+
+        try{
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio:true
+            });
+
+            chunks = [];
+
+            let options = {};
+
+            if(MediaRecorder.isTypeSupported("audio/mp4")){
+                options.mimeType = "audio/mp4";
+            }
+
+            mediaRecorder = new MediaRecorder(stream, options);
+
+            mediaRecorder.ondataavailable = (e)=>{
+                if(e.data && e.data.size > 0){
+                    chunks.push(e.data);
+                }
+            };
+
+            mediaRecorder.onstop = ()=>{
+
+                const blob = new Blob(
+                    chunks,
+                    options.mimeType ? {type: options.mimeType} : {}
+                );
+
+                currentBlob = blob;
+
+                const url = URL.createObjectURL(blob);
+
+                player.src = url;
+                player.load();
+
+                downloadBtn.style.display = "inline-block";
+
+                debug.innerHTML =
+                    "type: " + (blob.type || "(空)") + "<br>" +
+                    "size: " + blob.size + " bytes";
+
+                player.onloadedmetadata = () => {
+                    debug.innerHTML +=
+                        "<br>duration: " + player.duration;
+                };
+
+                player.onerror = () => {
+                    debug.innerHTML +=
+                        "<br><b>再生エラー</b>";
+                };
+            };
+
+            mediaRecorder.start(1000);
+
+            recording = true;
+
+            btn.classList.add("recording");
+
+            statusText.textContent = "録音中";
+
+            seconds = 0;
+            updateTimer();
+
+            timerInterval = setInterval(()=>{
+                seconds++;
+                updateTimer();
+            },1000);
+
+        }catch(err){
+
+            alert("マイクへのアクセスを許可してください");
+            console.error(err);
+
+        }
+
+    }else{
+
+        mediaRecorder.stop();
+
+        clearInterval(timerInterval);
+
+        recording = false;
+
+        btn.classList.remove("recording");
+
+        statusText.textContent = "録音完了";
+    }
+});
+
+downloadBtn.addEventListener("click", () => {
+
+    if(!currentBlob) return;
+
+    const a = document.createElement("a");
+    const url = URL.createObjectURL(currentBlob);
+
+    a.href = url;
+    a.download = "recording.m4a";
+    a.click();
+});
+
+updateTimer();
+</script>
+
+</body>
+</html>
