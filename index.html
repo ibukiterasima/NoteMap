@@ -7,11 +7,7 @@
 
 <style>
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 body{
 min-height:100vh;
@@ -20,10 +16,7 @@ background:linear-gradient(135deg,#8a6a4d,#6f533d);
 padding:20px;
 }
 
-.container{
-max-width:520px;
-margin:auto;
-}
+.container{max-width:520px;margin:auto;}
 
 .card{
 background:rgba(255,255,255,.18);
@@ -35,31 +28,14 @@ color:white;
 margin-bottom:16px;
 }
 
-.logo{
-text-align:center;
-font-size:2rem;
-font-weight:700;
-}
-
-.subtitle{
-text-align:center;
-opacity:.8;
-margin-top:6px;
-}
-
-.timer{
-text-align:center;
-font-size:3rem;
-margin:24px 0;
-}
+.logo{text-align:center;font-size:2rem;font-weight:700;}
+.subtitle{text-align:center;opacity:.8;margin-top:6px;}
+.timer{text-align:center;font-size:3rem;margin:24px 0;}
 
 .record-btn{
-width:120px;
-height:120px;
-border:none;
-border-radius:50%;
-display:block;
-margin:auto;
+width:120px;height:120px;
+border:none;border-radius:50%;
+display:block;margin:auto;
 cursor:pointer;
 background:radial-gradient(circle at 30% 30%,#5e9a70,#346344);
 }
@@ -69,22 +45,14 @@ background:radial-gradient(circle at 30% 30%,#ff7777,#d62828);
 }
 
 .record-dot{
-width:28px;
-height:28px;
-background:white;
-border-radius:50%;
+width:28px;height:28px;
+background:white;border-radius:50%;
 margin:auto;
 }
 
-.status{
-text-align:center;
-margin-top:20px;
-}
+.status{text-align:center;margin-top:20px;}
 
-audio{
-width:100%;
-margin-top:20px;
-}
+audio{width:100%;margin-top:20px;}
 
 .record-item{
 padding:12px;
@@ -93,9 +61,58 @@ background:rgba(255,255,255,.12);
 margin-top:10px;
 }
 
-button.small{
+.small-btn{
 margin-top:8px;
+margin-right:6px;
 padding:6px 10px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+}
+
+/* ===== ガラスダイアログ ===== */
+
+.modal{
+position:fixed;
+inset:0;
+display:none;
+justify-content:center;
+align-items:center;
+background:rgba(0,0,0,.3);
+backdrop-filter:blur(10px);
+}
+
+.modal-box{
+width:280px;
+padding:20px;
+border-radius:20px;
+background:rgba(255,255,255,.18);
+border:1px solid rgba(255,255,255,.25);
+backdrop-filter:blur(20px);
+color:white;
+}
+
+.modal-title{
+font-weight:700;
+margin-bottom:10px;
+}
+
+.modal input{
+width:100%;
+padding:10px;
+border:none;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+.modal-btns{
+display:flex;
+gap:8px;
+}
+
+.modal-btns button{
+flex:1;
+padding:8px;
 border:none;
 border-radius:10px;
 cursor:pointer;
@@ -131,6 +148,22 @@ cursor:pointer;
 
 </div>
 
+<!-- ガラスダイアログ -->
+<div class="modal" id="modal">
+<div class="modal-box">
+
+<div class="modal-title" id="mTitle"></div>
+
+<input id="mInput">
+
+<div class="modal-btns">
+<button id="cancel">キャンセル</button>
+<button id="ok">OK</button>
+</div>
+
+</div>
+</div>
+
 <script>
 
 let mediaRecorder;
@@ -149,50 +182,80 @@ const status = document.getElementById("status");
 const player = document.getElementById("player");
 const list = document.getElementById("list");
 
-/* タイマー */
+const modal = document.getElementById("modal");
+const mTitle = document.getElementById("mTitle");
+const mInput = document.getElementById("mInput");
+const cancel = document.getElementById("cancel");
+const ok = document.getElementById("ok");
 
-function update(){
-const m = String(Math.floor(seconds/60)).padStart(2,"0");
-const s = String(seconds%60).padStart(2,"0");
-timer.textContent = `${m}:${s}`;
+let resolveModal;
+
+/* ===== モーダル ===== */
+
+function showModal(title,value=""){
+
+modal.style.display="flex";
+mTitle.textContent=title;
+mInput.value=value;
+
+return new Promise(res=>{
+resolveModal=res;
+});
+
 }
 
-/* DB */
+cancel.onclick=()=>{
+modal.style.display="none";
+resolveModal(null);
+};
 
-const req = indexedDB.open("NoteMap",1);
+ok.onclick=()=>{
+modal.style.display="none";
+resolveModal(mInput.value);
+};
 
-req.onupgradeneeded = e=>{
-db = e.target.result;
+/* ===== タイマー ===== */
+
+function update(){
+timer.textContent=
+String(Math.floor(seconds/60)).padStart(2,"0")
++":"+String(seconds%60).padStart(2,"0");
+}
+
+/* ===== DB ===== */
+
+const req=indexedDB.open("NoteMap",1);
+
+req.onupgradeneeded=e=>{
+db=e.target.result;
 db.createObjectStore("rec",{keyPath:"id",autoIncrement:true});
 };
 
-req.onsuccess = e=>{
-db = e.target.result;
+req.onsuccess=e=>{
+db=e.target.result;
 load();
 };
 
-/* 録音 */
+/* ===== 録音 ===== */
 
-btn.onclick = async ()=>{
+btn.onclick=async()=>{
 
 if(!recording){
 
-stream = await navigator.mediaDevices.getUserMedia({audio:true});
+stream=await navigator.mediaDevices.getUserMedia({audio:true});
+chunks=[];
 
-chunks = [];
+mediaRecorder=new MediaRecorder(stream);
 
-mediaRecorder = new MediaRecorder(stream);
-
-mediaRecorder.ondataavailable = e=>{
+mediaRecorder.ondataavailable=e=>{
 chunks.push(e.data);
 };
 
-mediaRecorder.onstop = ()=>{
+mediaRecorder.onstop=()=>{
 
-const blob = new Blob(chunks,{type:"audio/webm"});
-const url = URL.createObjectURL(blob);
+const blob=new Blob(chunks,{type:"audio/webm"});
 
-player.src = url;
+const url=URL.createObjectURL(blob);
 
 db.transaction("rec","readwrite")
 .objectStore("rec")
@@ -207,20 +270,20 @@ if(stream){
 stream.getTracks().forEach(t=>t.stop());
 }
 
+player.src=url;
+
 };
 
 mediaRecorder.start();
 
-recording = true;
-
+recording=true;
 btn.classList.add("recording");
+status.textContent="録音中";
 
-status.textContent = "録音中";
-
-seconds = 0;
+seconds=0;
 update();
 
-timerId = setInterval(()=>{
+timerId=setInterval(()=>{
 seconds++;
 update();
 },1000);
@@ -231,43 +294,71 @@ mediaRecorder.stop();
 
 clearInterval(timerId);
 
-recording = false;
-
+recording=false;
 btn.classList.remove("recording");
-
-status.textContent = "録音完了";
-
+status.textContent="録音完了";
 }
 
 };
 
-/* 一覧 */
+/* ===== 一覧 ===== */
 
 function load(){
 
-if(!db) return;
+if(!db)return;
 
-list.innerHTML = "";
+list.innerHTML="";
 
 db.transaction("rec")
 .objectStore("rec")
-.getAll().onsuccess = e=>{
+.getAll().onsuccess=e=>{
 
 e.target.result.reverse().forEach(r=>{
 
-const div = document.createElement("div");
+const div=document.createElement("div");
 div.className="record-item";
 
-const url = URL.createObjectURL(r.blob);
+const url=URL.createObjectURL(r.blob);
 
-div.innerHTML = `
+div.innerHTML=`
 <div>${r.name}</div>
-<button class="small">再生</button>
+<button class="small-btn">再生</button>
+<button class="small-btn">名前変更</button>
+<button class="small-btn">削除</button>
 `;
 
-div.querySelector("button").onclick=()=>{
+const [play,rename,del]=div.querySelectorAll("button");
+
+/* 再生 */
+
+play.onclick=()=>{
 player.src=url;
 player.play();
+};
+
+/* 名前変更 */
+
+rename.onclick=async()=>{
+const name=await showModal("名前変更",r.name);
+if(!name)return;
+
+r.name=name;
+
+db.transaction("rec","readwrite")
+.objectStore("rec")
+.put(r);
+
+load();
+};
+
+/* 削除 */
+
+del.onclick=()=>{
+db.transaction("rec","readwrite")
+.objectStore("rec")
+.delete(r.id);
+
+load();
 };
 
 list.appendChild(div);
@@ -277,8 +368,6 @@ list.appendChild(div);
 };
 
 }
-
-update();
 
 </script>
 
