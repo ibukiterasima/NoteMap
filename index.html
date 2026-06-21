@@ -14,21 +14,30 @@
 }
 
 body{
+
     min-height:100vh;
 
     font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 
     background:
-    radial-gradient(circle at top left,
+    radial-gradient(
+    circle at top left,
     rgba(255,255,255,.15),
-    transparent 35%),
-    linear-gradient(135deg,#8a6a4d,#6f533d);
+    transparent 35%
+    ),
+    linear-gradient(
+    135deg,
+    #8a6a4d,
+    #6f533d
+    );
 
     padding:20px;
 }
 
 .container{
+
     max-width:520px;
+
     margin:auto;
 }
 
@@ -42,12 +51,19 @@ body{
 
     border-radius:30px;
 
-    background:rgba(255,255,255,.18);
+    background:
+    rgba(255,255,255,.18);
 
-    border:1px solid rgba(255,255,255,.25);
+    border:
+    1px solid rgba(
+    255,255,255,.25
+    );
 
-    backdrop-filter:blur(22px);
-    -webkit-backdrop-filter:blur(22px);
+    backdrop-filter:
+    blur(22px);
+
+    -webkit-backdrop-filter:
+    blur(22px);
 }
 
 .logo{
@@ -55,6 +71,7 @@ body{
     text-align:center;
 
     font-size:2rem;
+
     font-weight:700;
 }
 
@@ -72,39 +89,87 @@ body{
     text-align:center;
 
     font-size:3rem;
+
     font-weight:200;
 
     margin:24px 0;
 }
 
+/* 波 */
+
+.wave-wrap{
+
+    height:32px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    margin-bottom:18px;
+}
+
+.wave{
+
+    width:220px;
+
+    height:24px;
+}
+
+.wave path{
+
+    fill:none;
+
+    stroke:white;
+
+    stroke-width:2;
+
+    opacity:.45;
+
+    stroke-linecap:round;
+}
+
 .record-btn{
 
     width:120px;
+
     height:120px;
 
     display:block;
+
     margin:auto;
 
     border:none;
+
     border-radius:50%;
 
     cursor:pointer;
 
     background:
-    radial-gradient(circle at 30% 30%,
-    #5e9a70,#346344);
+    radial-gradient(
+    circle at 30% 30%,
+    #5e9a70,
+    #346344
+    );
+
+    transition:.25s;
 }
 
 .record-btn.recording{
 
     background:
-    radial-gradient(circle at 30% 30%,
-    #ff7777,#d62828);
+    radial-gradient(
+    circle at 30% 30%,
+    #ff7777,
+    #d62828
+    );
 }
 
 .record-dot{
 
     width:28px;
+
     height:28px;
 
     background:white;
@@ -135,9 +200,42 @@ audio{
     margin-bottom:12px;
 }
 
+/* 検索 */
+
+.search-input{
+
+    width:100%;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:14px;
+
+    margin-bottom:12px;
+
+    background:
+    rgba(255,255,255,.15);
+
+    color:white;
+
+    outline:none;
+
+    backdrop-filter:blur(10px);
+
+    -webkit-backdrop-filter:blur(10px);
+}
+
+.search-input::placeholder{
+
+    color:
+    rgba(255,255,255,.65);
+}
+
 .record-list{
 
     display:flex;
+
     flex-direction:column;
 
     gap:12px;
@@ -149,12 +247,17 @@ audio{
 
     border-radius:18px;
 
-    background:rgba(255,255,255,.12);
+    background:
+    rgba(255,255,255,.12);
 
-    border:1px solid rgba(255,255,255,.15);
+    border:
+    1px solid rgba(
+    255,255,255,.15
+    );
 }
 
 .record-name{
+
     font-weight:600;
 }
 
@@ -185,6 +288,8 @@ audio{
     border-radius:10px;
 
     cursor:pointer;
+
+    background:white;
 }
 
 /* モーダル */
@@ -198,30 +303,45 @@ audio{
     display:none;
 
     justify-content:center;
+
     align-items:center;
 
-    background:rgba(0,0,0,.35);
+    background:
+    rgba(0,0,0,.35);
 
-    backdrop-filter:blur(10px);
-    -webkit-backdrop-filter:blur(10px);
+    backdrop-filter:
+    blur(10px);
+
+    -webkit-backdrop-filter:
+    blur(10px);
 
     z-index:999;
 }
 
 .modal{
 
-    width:min(90vw,340px);
+    width:min(
+    90vw,
+    340px
+    );
 
     padding:22px;
 
     border-radius:24px;
 
-    background:rgba(255,255,255,.18);
+    background:
+    rgba(255,255,255,.18);
 
-    border:1px solid rgba(255,255,255,.25);
+    border:
+    1px solid rgba(
+    255,255,255,.25
+    );
 
-    backdrop-filter:blur(22px);
-    -webkit-backdrop-filter:blur(22px);
+    backdrop-filter:
+    blur(22px);
+
+    -webkit-backdrop-filter:
+    blur(22px);
 
     color:white;
 }
@@ -294,6 +414,24 @@ NoteMap
 00:00
 </div>
 
+<div class="wave-wrap">
+
+<svg
+class="wave"
+viewBox="0 0 200 20">
+
+<path
+id="wavePath"
+d="M0 10
+Q 25 10 50 10
+T 100 10
+T 150 10
+T 200 10"/>
+
+</svg>
+
+</div>
+
 <button
 id="recordBtn"
 class="record-btn">
@@ -322,6 +460,12 @@ controls>
 <div class="section-title">
 録音一覧
 </div>
+
+<input
+id="searchInput"
+class="search-input"
+type="text"
+placeholder="検索">
 
 <div
 id="recordList"
@@ -380,6 +524,7 @@ OK
 </div>
 
 </div>
+
 <script>
 
 let mediaRecorder;
@@ -390,6 +535,8 @@ let recording = false;
 
 let seconds = 0;
 let timerInterval;
+
+let waveInterval;
 
 let db;
 
@@ -416,6 +563,16 @@ document.getElementById(
 const recordList =
 document.getElementById(
 "recordList"
+);
+
+const searchInput =
+document.getElementById(
+"searchInput"
+);
+
+const wavePath =
+document.getElementById(
+"wavePath"
 );
 
 /* モーダル */
@@ -478,6 +635,58 @@ function updateTimer(){
     `${m}:${s}`;
 }
 
+/* 波 */
+
+function startWave(){
+
+    clearInterval(
+    waveInterval
+    );
+
+    waveInterval =
+    setInterval(()=>{
+
+        const a =
+        Math.random()*5;
+
+        const b =
+        Math.random()*5;
+
+        const c =
+        Math.random()*5;
+
+        wavePath.setAttribute(
+
+        "d",
+
+        `M0 10
+        Q 25 ${10-a}
+        50 10
+        T 100 ${10+b}
+        T 150 ${10-c}
+        T 200 10`
+
+        );
+
+    },150);
+
+}
+
+function stopWave(){
+
+    clearInterval(
+    waveInterval
+    );
+
+    wavePath.setAttribute(
+
+    "d",
+
+    "M0 10 Q 25 10 50 10 T 100 10 T 150 10 T 200 10"
+
+    );
+}
+
 /* モーダル */
 
 function closeModal(){
@@ -509,9 +718,7 @@ message
         modalOverlay.style.display =
         "flex";
 
-    }
-    );
-
+    });
 }
 
 function showPrompt(
@@ -543,9 +750,7 @@ defaultValue=""
 
         modalInput.focus();
 
-    }
-    );
-
+    });
 }
 
 modalCancel.onclick =
@@ -560,9 +765,7 @@ modalCancel.onclick =
         modalResolve(
         null
         );
-
     }
-
 };
 
 modalOk.onclick =
@@ -591,9 +794,7 @@ modalOk.onclick =
         modalResolve(
         value
         );
-
     }
-
 };
 
 /* IndexedDB */
@@ -616,7 +817,6 @@ request.onupgradeneeded =
         keyPath:"id",
         autoIncrement:true
     });
-
 };
 
 request.onsuccess =
@@ -626,16 +826,14 @@ request.onsuccess =
     event.target.result;
 
     loadRecords();
-
 };
 
 request.onerror =
 ()=>{
 
-    alert(
-    "データベースエラー"
+    console.error(
+    "DB Error"
     );
-
 };
 
 function saveRecord(
@@ -677,7 +875,6 @@ blob
         loadRecords();
 
     };
-
 }
 
 /* 録音 */
@@ -686,9 +883,7 @@ btn.addEventListener(
 "click",
 async ()=>{
 
-    if(
-    !recording
-    ){
+    if(!recording){
 
         try{
 
@@ -696,9 +891,7 @@ async ()=>{
             await navigator
             .mediaDevices
             .getUserMedia({
-
                 audio:true
-
             });
 
             chunks = [];
@@ -711,10 +904,8 @@ async ()=>{
             "audio/mp4"
             )
             ){
-
                 options.mimeType =
                 "audio/mp4";
-
             }
 
             mediaRecorder =
@@ -723,22 +914,21 @@ async ()=>{
             options
             );
 
-            mediaRecorder
-            .ondataavailable =
+            mediaRecorder.ondataavailable =
             e=>{
 
                 if(
+                e.data &&
                 e.data.size > 0
                 ){
-
                     chunks.push(
                     e.data
                     );
-
                 }
 
             };
-                        mediaRecorder.onstop =
+
+            mediaRecorder.onstop =
             ()=>{
 
                 const blob =
@@ -767,14 +957,12 @@ async ()=>{
                 if(
                 currentStream
                 ){
-
                     currentStream
                     .getTracks()
                     .forEach(
                     track =>
                     track.stop()
                     );
-
                 }
 
             };
@@ -785,6 +973,8 @@ async ()=>{
 
             recording =
             true;
+
+            startWave();
 
             btn.classList.add(
             "recording"
@@ -798,16 +988,13 @@ async ()=>{
             updateTimer();
 
             timerInterval =
-            setInterval(
-            ()=>{
+            setInterval(()=>{
 
                 seconds++;
 
                 updateTimer();
 
-            },
-            1000
-            );
+            },1000);
 
         }catch(err){
 
@@ -819,22 +1006,13 @@ async ()=>{
 
     }else{
 
-        mediaRecorder
-        .requestData();
-
-        setTimeout(
-        ()=>{
-
-            mediaRecorder
-            .stop();
-
-        },
-        300
-        );
+        mediaRecorder.stop();
 
         clearInterval(
         timerInterval
         );
+
+        stopWave();
 
         recording =
         false;
@@ -852,7 +1030,7 @@ async ()=>{
 
 updateTimer();
 
-/* 一覧表示 */
+/* 一覧 */
 
 function loadRecords(){
 
@@ -876,9 +1054,29 @@ function loadRecords(){
     request.onsuccess =
     ()=>{
 
-        const records =
+        let records =
         request.result
         .reverse();
+
+        const keyword =
+        searchInput.value
+        .toLowerCase();
+
+        if(keyword){
+
+            records =
+            records.filter(
+            record=>
+
+            record.name
+            .toLowerCase()
+            .includes(
+            keyword
+            )
+
+            );
+
+        }
 
         records.forEach(
         record=>{
@@ -939,8 +1137,6 @@ record
     actions.className =
     "record-actions";
 
-    /* 再生 */
-
     const playBtn =
     document.createElement(
     "button"
@@ -965,14 +1161,9 @@ record
 
         player.load();
 
-        player.play()
-        .catch(
-        console.error
-        );
+        player.play();
 
     };
-
-    /* 名前変更 */
 
     const renameBtn =
     document.createElement(
@@ -1028,8 +1219,6 @@ record
         };
 
     };
-
-    /* 削除 */
 
     const deleteBtn =
     document.createElement(
@@ -1111,6 +1300,11 @@ record
     );
 
 }
+
+searchInput.addEventListener(
+"input",
+loadRecords
+);
 
 </script>
 
