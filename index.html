@@ -6,6 +6,7 @@
 <title>NoteMap</title>
 
 <style>
+
 *{
     margin:0;
     padding:0;
@@ -14,43 +15,43 @@
 
 body{
     min-height:100vh;
+    padding:20px;
+
     font-family:-apple-system,BlinkMacSystemFont,sans-serif;
 
     background:
     radial-gradient(circle at top left,
-    rgba(255,255,255,0.15),
+    rgba(255,255,255,.15),
     transparent 35%),
     linear-gradient(135deg,#8a6a4d,#6f533d);
-
-    padding:20px;
 }
 
 .container{
-    max-width:500px;
+    max-width:520px;
     margin:auto;
 }
 
 .card{
-    backdrop-filter:blur(22px);
-    -webkit-backdrop-filter:blur(22px);
-
-    background:rgba(255,255,255,.18);
-
-    border:1px solid rgba(255,255,255,.25);
-
-    border-radius:32px;
+    margin-bottom:20px;
 
     padding:24px;
 
     color:white;
 
-    margin-bottom:20px;
+    border-radius:30px;
+
+    background:rgba(255,255,255,.18);
+
+    border:1px solid rgba(255,255,255,.25);
+
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
 }
 
 .logo{
+    text-align:center;
     font-size:2rem;
     font-weight:700;
-    text-align:center;
 }
 
 .subtitle{
@@ -61,20 +62,23 @@ body{
 
 .timer{
     text-align:center;
+
     font-size:3rem;
     font-weight:200;
-    margin:25px 0;
+
+    margin:24px 0;
 }
 
 .record-btn{
-    width:110px;
-    height:110px;
 
-    border:none;
-    border-radius:50%;
+    width:120px;
+    height:120px;
 
     display:block;
     margin:auto;
+
+    border:none;
+    border-radius:50%;
 
     cursor:pointer;
 
@@ -86,48 +90,60 @@ body{
 }
 
 .record-btn.recording{
+
     background:
     radial-gradient(circle at 30% 30%,
     #ff7777,#d62828);
 }
 
 .record-dot{
+
     width:28px;
     height:28px;
+
     border-radius:50%;
+
     background:white;
+
     margin:auto;
 }
 
 .status{
+
     text-align:center;
     margin-top:20px;
 }
 
 audio{
+
     width:100%;
     margin-top:20px;
 }
 
 .section-title{
+
     font-size:1.2rem;
-    margin-bottom:15px;
+    font-weight:600;
+
+    margin-bottom:12px;
 }
 
 .record-list{
+
     display:flex;
     flex-direction:column;
     gap:12px;
 }
 
 .record-item{
-    background:rgba(255,255,255,.12);
 
-    border:1px solid rgba(255,255,255,.15);
+    padding:12px;
 
     border-radius:18px;
 
-    padding:12px;
+    background:rgba(255,255,255,.12);
+
+    border:1px solid rgba(255,255,255,.15);
 }
 
 .record-name{
@@ -135,23 +151,42 @@ audio{
 }
 
 .record-date{
+
     opacity:.7;
     font-size:.85rem;
+
     margin-top:4px;
 }
 
 .record-actions{
+
     display:flex;
     gap:8px;
+
     margin-top:10px;
 }
 
 .small-btn{
+
+    padding:8px 12px;
+
     border:none;
     border-radius:10px;
-    padding:8px 12px;
+
     cursor:pointer;
 }
+
+.debug{
+
+    margin-top:15px;
+
+    font-size:12px;
+
+    opacity:.8;
+
+    word-break:break-all;
+}
+
 </style>
 </head>
 
@@ -159,40 +194,65 @@ audio{
 
 <div class="container">
 
-<div class="card">
+    <div class="card">
 
-<div class="logo">NoteMap</div>
-<div class="subtitle">録音</div>
+        <div class="logo">NoteMap</div>
 
-<div class="timer" id="timer">00:00</div>
+        <div class="subtitle">
+            録音
+        </div>
 
-<button class="record-btn" id="recordBtn">
-<div class="record-dot"></div>
-</button>
+        <div class="timer" id="timer">
+            00:00
+        </div>
 
-<div class="status" id="status">
-タップして録音開始
-</div>
+        <button
+            id="recordBtn"
+            class="record-btn">
 
-<audio id="player" controls></audio>
+            <div class="record-dot"></div>
 
-</div>
+        </button>
 
-<div class="card">
+        <div
+            id="status"
+            class="status">
 
-<div class="section-title">
-録音一覧
-</div>
+            タップして録音開始
 
-<div id="recordList" class="record-list">
-</div>
+        </div>
 
-</div>
+        <audio
+            id="player"
+            controls>
+        </audio>
+
+        <div
+            id="debug"
+            class="debug">
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <div class="section-title">
+            録音一覧
+        </div>
+
+        <div
+            id="recordList"
+            class="record-list">
+        </div>
+
+    </div>
 
 </div>
 <script>
 
 let mediaRecorder;
+let currentStream;
+
 let chunks = [];
 let recording = false;
 
@@ -206,89 +266,113 @@ const timer = document.getElementById("timer");
 const statusText = document.getElementById("status");
 const player = document.getElementById("player");
 const recordList = document.getElementById("recordList");
+const debug = document.getElementById("debug");
 
 function updateTimer(){
-    const m = String(Math.floor(seconds/60)).padStart(2,"0");
-    const s = String(seconds%60).padStart(2,"0");
-    timer.textContent = `${m}:${s}`;
+
+    const m =
+    String(
+    Math.floor(seconds / 60)
+    ).padStart(2,"0");
+
+    const s =
+    String(
+    seconds % 60
+    ).padStart(2,"0");
+
+    timer.textContent =
+    `${m}:${s}`;
 }
 
-const request = indexedDB.open("NoteMapDB",1);
+const request =
+indexedDB.open(
+"NoteMapDB",
+1
+);
 
-request.onupgradeneeded = (event)=>{
+request.onupgradeneeded =
+(event)=>{
 
-    db = event.target.result;
+    db =
+    event.target.result;
 
-    db.createObjectStore("records",{
+    db.createObjectStore(
+    "records",
+    {
         keyPath:"id",
         autoIncrement:true
     });
+
 };
 
-request.onsuccess = (event)=>{
+request.onsuccess =
+(event)=>{
 
-    db = event.target.result;
+    db =
+    event.target.result;
 
     loadRecords();
+
+};
+
+request.onerror = ()=>{
+
+    alert(
+    "データベースを開けません"
+    );
+
 };
 
 function saveRecord(blob){
 
     const transaction =
-    db.transaction(["records"],"readwrite");
+    db.transaction(
+    ["records"],
+    "readwrite"
+    );
 
     const store =
-    transaction.objectStore("records");
+    transaction.objectStore(
+    "records"
+    );
 
-    const now = new Date();
+    const now =
+    new Date();
 
     store.add({
-        name:"録音 " +
+
+        name:
+        "録音 " +
         now.toLocaleString("ja-JP"),
 
-        date:now.toISOString(),
+        date:
+        now.toISOString(),
 
-        blob:blob
+        blob:
+        blob
+
     });
 
-    transaction.oncomplete = ()=>{
+    transaction.oncomplete =
+    ()=>{
+
         loadRecords();
+
     };
+
 }
 
-function loadRecords(){
-
-    recordList.innerHTML = "";
-
-    const transaction =
-    db.transaction(["records"],"readonly");
-
-    const store =
-    transaction.objectStore("records");
-
-    const request = store.getAll();
-
-    request.onsuccess = ()=>{
-
-        const records =
-        request.result.reverse();
-
-        records.forEach(record=>{
-
-            createRecordCard(record);
-
-        });
-    };
-}
-
-btn.addEventListener("click", async ()=>{
+btn.addEventListener(
+"click",
+async ()=>{
 
     if(!recording){
 
         try{
 
-            const stream =
-            await navigator.mediaDevices
+            currentStream =
+            await navigator
+            .mediaDevices
             .getUserMedia({
 
                 audio:{
@@ -304,30 +388,42 @@ btn.addEventListener("click", async ()=>{
             let options = {};
 
             if(
-            MediaRecorder.isTypeSupported(
+            MediaRecorder
+            .isTypeSupported(
             "audio/mp4"
-            )){
+            )
+            ){
+
                 options.mimeType =
                 "audio/mp4";
+
             }
 
             mediaRecorder =
             new MediaRecorder(
-            stream,
+            currentStream,
             options
             );
 
-            mediaRecorder.ondataavailable =
+            mediaRecorder
+            .ondataavailable =
             (e)=>{
 
-                if(e.data.size > 0){
+                if(
+                e.data &&
+                e.data.size > 0
+                ){
 
-                    chunks.push(e.data);
+                    chunks.push(
+                    e.data
+                    );
 
                 }
+
             };
 
-            mediaRecorder.onstop = ()=>{
+            mediaRecorder.onstop =
+            ()=>{
 
                 const blob =
                 new Blob(
@@ -339,19 +435,45 @@ btn.addEventListener("click", async ()=>{
                 });
 
                 const url =
-                URL.createObjectURL(blob);
+                URL.createObjectURL(
+                blob
+                );
 
-                player.src = url;
+                player.src =
+                url;
 
                 player.load();
 
-                saveRecord(blob);
+                debug.innerHTML =
+                "サイズ: " +
+                blob.size +
+                " bytes";
+
+                saveRecord(
+                blob
+                );
+
+                if(
+                currentStream
+                ){
+
+                    currentStream
+                    .getTracks()
+                    .forEach(
+                    track =>
+                    track.stop()
+                    );
+
+                }
 
             };
 
-            mediaRecorder.start(1000);
+            mediaRecorder.start(
+            1000
+            );
 
-            recording = true;
+            recording =
+            true;
 
             btn.classList.add(
             "recording"
@@ -365,13 +487,16 @@ btn.addEventListener("click", async ()=>{
             updateTimer();
 
             timerInterval =
-            setInterval(()=>{
+            setInterval(
+            ()=>{
 
                 seconds++;
 
                 updateTimer();
 
-            },1000);
+            },
+            1000
+            );
 
         }catch(err){
 
@@ -379,23 +504,33 @@ btn.addEventListener("click", async ()=>{
             "マイクを許可してください"
             );
 
-            console.error(err);
+            console.error(
+            err
+            );
 
         }
 
     }else{
 
-        mediaRecorder.requestData();
+        mediaRecorder
+        .requestData();
 
-        setTimeout(()=>{
+        setTimeout(
+        ()=>{
 
-            mediaRecorder.stop();
+            mediaRecorder
+            .stop();
 
-        },300);
+        },
+        300
+        );
 
-        clearInterval(timerInterval);
+        clearInterval(
+        timerInterval
+        );
 
-        recording = false;
+        recording =
+        false;
 
         btn.classList.remove(
         "recording"
@@ -403,20 +538,66 @@ btn.addEventListener("click", async ()=>{
 
         statusText.textContent =
         "録音完了";
+
     }
+
 });
 
 updateTimer();
-function createRecordCard(record){
+function loadRecords(){
+
+    recordList.innerHTML = "";
+
+    const transaction =
+    db.transaction(
+    ["records"],
+    "readonly"
+    );
+
+    const store =
+    transaction.objectStore(
+    "records"
+    );
+
+    const request =
+    store.getAll();
+
+    request.onsuccess =
+    ()=>{
+
+        const records =
+        request.result
+        .reverse();
+
+        records.forEach(
+        record=>{
+
+            createRecordCard(
+            record
+            );
+
+        });
+
+    };
+
+}
+
+function createRecordCard(
+record
+){
 
     const item =
-    document.createElement("div");
+    document.createElement(
+    "div"
+    );
 
     item.className =
     "record-item";
 
     const name =
-    document.createElement("div");
+    document.createElement(
+    "div"
+    );
 
     name.className =
     "record-name";
@@ -425,23 +606,32 @@ function createRecordCard(record){
     record.name;
 
     const date =
-    document.createElement("div");
+    document.createElement(
+    "div"
+    );
 
     date.className =
     "record-date";
 
     date.textContent =
-    new Date(record.date)
-    .toLocaleString("ja-JP");
+    new Date(
+    record.date
+    ).toLocaleString(
+    "ja-JP"
+    );
 
     const actions =
-    document.createElement("div");
+    document.createElement(
+    "div"
+    );
 
     actions.className =
     "record-actions";
 
     const playBtn =
-    document.createElement("button");
+    document.createElement(
+    "button"
+    );
 
     playBtn.className =
     "small-btn";
@@ -449,22 +639,30 @@ function createRecordCard(record){
     playBtn.textContent =
     "再生";
 
-    playBtn.onclick = ()=>{
+    playBtn.onclick =
+    ()=>{
 
         const url =
         URL.createObjectURL(
         record.blob
         );
 
-        player.src = url;
+        player.src =
+        url;
 
         player.load();
 
-        player.play();
+        player.play()
+        .catch(
+        console.error
+        );
+
     };
 
     const renameBtn =
-    document.createElement("button");
+    document.createElement(
+    "button"
+    );
 
     renameBtn.className =
     "small-btn";
@@ -472,7 +670,8 @@ function createRecordCard(record){
     renameBtn.textContent =
     "名前変更";
 
-    renameBtn.onclick = ()=>{
+    renameBtn.onclick =
+    ()=>{
 
         const newName =
         prompt(
@@ -480,7 +679,14 @@ function createRecordCard(record){
         record.name
         );
 
-        if(!newName) return;
+        if(
+        !newName
+        ){
+            return;
+        }
+
+        record.name =
+        newName;
 
         const transaction =
         db.transaction(
@@ -493,10 +699,9 @@ function createRecordCard(record){
         "records"
         );
 
-        record.name =
-        newName;
-
-        store.put(record);
+        store.put(
+        record
+        );
 
         transaction.oncomplete =
         ()=>{
@@ -504,10 +709,13 @@ function createRecordCard(record){
             loadRecords();
 
         };
+
     };
 
     const deleteBtn =
-    document.createElement("button");
+    document.createElement(
+    "button"
+    );
 
     deleteBtn.className =
     "small-btn";
@@ -515,7 +723,8 @@ function createRecordCard(record){
     deleteBtn.textContent =
     "削除";
 
-    deleteBtn.onclick = ()=>{
+    deleteBtn.onclick =
+    ()=>{
 
         if(
         !confirm(
@@ -546,6 +755,7 @@ function createRecordCard(record){
             loadRecords();
 
         };
+
     };
 
     actions.appendChild(
@@ -560,13 +770,25 @@ function createRecordCard(record){
     deleteBtn
     );
 
-    item.appendChild(name);
+    item.appendChild(
+    name
+    );
 
-    item.appendChild(date);
+    item.appendChild(
+    date
+    );
 
-    item.appendChild(actions);
+    item.appendChild(
+    actions
+    );
 
     recordList.appendChild(
     item
     );
+
 }
+
+</script>
+
+</body>
+</html>
