@@ -6,8 +6,11 @@
 <title>NoteMap</title>
 
 <style>
-
-*{margin:0;padding:0;box-sizing:border-box;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
 body{
 min-height:100vh;
@@ -16,7 +19,10 @@ background:linear-gradient(135deg,#8a6a4d,#6f533d);
 padding:20px;
 }
 
-.container{max-width:520px;margin:auto;}
+.container{
+max-width:520px;
+margin:auto;
+}
 
 .card{
 background:rgba(255,255,255,.18);
@@ -28,14 +34,31 @@ color:white;
 margin-bottom:16px;
 }
 
-.logo{text-align:center;font-size:2rem;font-weight:700;}
-.subtitle{text-align:center;opacity:.8;margin-top:6px;}
-.timer{text-align:center;font-size:3rem;margin:24px 0;}
+.logo{
+text-align:center;
+font-size:2rem;
+font-weight:700;
+}
+
+.subtitle{
+text-align:center;
+opacity:.8;
+margin-top:6px;
+}
+
+.timer{
+text-align:center;
+font-size:3rem;
+margin:24px 0;
+}
 
 .record-btn{
-width:120px;height:120px;
-border:none;border-radius:50%;
-display:block;margin:auto;
+width:120px;
+height:120px;
+border:none;
+border-radius:50%;
+display:block;
+margin:auto;
 cursor:pointer;
 background:radial-gradient(circle at 30% 30%,#5e9a70,#346344);
 }
@@ -45,14 +68,22 @@ background:radial-gradient(circle at 30% 30%,#ff7777,#d62828);
 }
 
 .record-dot{
-width:28px;height:28px;
-background:white;border-radius:50%;
+width:28px;
+height:28px;
+background:white;
+border-radius:50%;
 margin:auto;
 }
 
-.status{text-align:center;margin-top:20px;}
+.status{
+text-align:center;
+margin-top:20px;
+}
 
-audio{width:100%;margin-top:20px;}
+audio{
+width:100%;
+margin-top:20px;
+}
 
 .record-item{
 padding:12px;
@@ -70,7 +101,7 @@ border-radius:10px;
 cursor:pointer;
 }
 
-/* ===== ガラスダイアログ ===== */
+/* ===== モーダル ===== */
 
 .modal{
 position:fixed;
@@ -78,7 +109,7 @@ inset:0;
 display:none;
 justify-content:center;
 align-items:center;
-background:rgba(0,0,0,.3);
+background:rgba(0,0,0,.35);
 backdrop-filter:blur(10px);
 }
 
@@ -97,7 +128,7 @@ font-weight:700;
 margin-bottom:10px;
 }
 
-.modal input{
+.modal-box input{
 width:100%;
 padding:10px;
 border:none;
@@ -117,7 +148,6 @@ border:none;
 border-radius:10px;
 cursor:pointer;
 }
-
 </style>
 </head>
 
@@ -126,7 +156,6 @@ cursor:pointer;
 <div class="container">
 
 <div class="card">
-
 <div class="logo">NoteMap</div>
 <div class="subtitle">録音</div>
 
@@ -139,7 +168,6 @@ cursor:pointer;
 <div class="status" id="status">タップで録音</div>
 
 <audio id="player" controls></audio>
-
 </div>
 
 <div class="card">
@@ -148,7 +176,7 @@ cursor:pointer;
 
 </div>
 
-<!-- ガラスダイアログ -->
+<!-- モーダル -->
 <div class="modal" id="modal">
 <div class="modal-box">
 
@@ -182,6 +210,8 @@ const status = document.getElementById("status");
 const player = document.getElementById("player");
 const list = document.getElementById("list");
 
+/* ===== モーダル ===== */
+
 const modal = document.getElementById("modal");
 const mTitle = document.getElementById("mTitle");
 const mInput = document.getElementById("mInput");
@@ -190,9 +220,7 @@ const ok = document.getElementById("ok");
 
 let resolveModal;
 
-/* ===== モーダル ===== */
-
-function showModal(title,value=""){
+function showModal(title, value=""){
 
 modal.style.display="flex";
 mTitle.textContent=title;
@@ -224,44 +252,44 @@ String(Math.floor(seconds/60)).padStart(2,"0")
 
 /* ===== DB ===== */
 
-const req=indexedDB.open("NoteMap",1);
+const req = indexedDB.open("NoteMap",1);
 
-req.onupgradeneeded=e=>{
-db=e.target.result;
+req.onupgradeneeded = e=>{
+db = e.target.result;
 db.createObjectStore("rec",{keyPath:"id",autoIncrement:true});
 };
 
-req.onsuccess=e=>{
-db=e.target.result;
+req.onsuccess = e=>{
+db = e.target.result;
 load();
 };
 
 /* ===== 録音 ===== */
 
-btn.onclick=async()=>{
+btn.onclick = async ()=>{
 
 if(!recording){
 
-stream=await navigator.mediaDevices.getUserMedia({audio:true});
-chunks=[];
+stream = await navigator.mediaDevices.getUserMedia({audio:true});
+chunks = [];
 
-mediaRecorder=new MediaRecorder(stream);
+mediaRecorder = new MediaRecorder(stream);
 
-mediaRecorder.ondataavailable=e=>{
+mediaRecorder.ondataavailable = e=>{
 chunks.push(e.data);
 };
 
-mediaRecorder.onstop=()=>{
+mediaRecorder.onstop = ()=>{
 
-const blob=new Blob(chunks,{type:"audio/webm"});
+const blob = new Blob(chunks,{type:"audio/webm"});
+const url = URL.createObjectURL(blob);
 
-const url=URL.createObjectURL(blob);
-
+/* ★URLも保存（Safari安定化） */
 db.transaction("rec","readwrite")
 .objectStore("rec")
 .add({
 name:"録音 "+new Date().toLocaleString(),
-blob:blob
+url:url
 });
 
 load();
@@ -270,20 +298,20 @@ if(stream){
 stream.getTracks().forEach(t=>t.stop());
 }
 
-player.src=url;
+player.src = url;
 
 };
 
 mediaRecorder.start();
 
-recording=true;
+recording = true;
 btn.classList.add("recording");
-status.textContent="録音中";
+status.textContent = "録音中";
 
-seconds=0;
+seconds = 0;
 update();
 
-timerId=setInterval(()=>{
+timerId = setInterval(()=>{
 seconds++;
 update();
 },1000);
@@ -294,9 +322,10 @@ mediaRecorder.stop();
 
 clearInterval(timerId);
 
-recording=false;
+recording = false;
+
 btn.classList.remove("recording");
-status.textContent="録音完了";
+status.textContent = "録音完了";
 }
 
 };
@@ -305,20 +334,18 @@ status.textContent="録音完了";
 
 function load(){
 
-if(!db)return;
+if(!db) return;
 
-list.innerHTML="";
+list.innerHTML = "";
 
 db.transaction("rec")
 .objectStore("rec")
-.getAll().onsuccess=e=>{
+.getAll().onsuccess = e=>{
 
 e.target.result.reverse().forEach(r=>{
 
-const div=document.createElement("div");
+const div = document.createElement("div");
 div.className="record-item";
-
-const url=URL.createObjectURL(r.blob);
 
 div.innerHTML=`
 <div>${r.name}</div>
@@ -327,38 +354,39 @@ div.innerHTML=`
 <button class="small-btn">削除</button>
 `;
 
-const [play,rename,del]=div.querySelectorAll("button");
+const [play,rename,del] = div.querySelectorAll("button");
 
 /* 再生 */
-
-play.onclick=()=>{
-player.src=url;
-player.play();
+play.onclick = ()=>{
+player.src = r.url;
+player.play().catch(()=>{});
 };
 
 /* 名前変更 */
+rename.onclick = async ()=>{
 
-rename.onclick=async()=>{
-const name=await showModal("名前変更",r.name);
-if(!name)return;
+const name = await showModal("名前変更", r.name);
+if(!name) return;
 
-r.name=name;
+r.name = name;
 
 db.transaction("rec","readwrite")
 .objectStore("rec")
 .put(r);
 
 load();
+
 };
 
 /* 削除 */
+del.onclick = ()=>{
 
-del.onclick=()=>{
 db.transaction("rec","readwrite")
 .objectStore("rec")
 .delete(r.id);
 
 load();
+
 };
 
 list.appendChild(div);
